@@ -1,0 +1,12 @@
+# Build directory
+build/
+bin/
+out/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
