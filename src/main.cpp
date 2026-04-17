@@ -1,23 +1,42 @@
 #include <iostream>
-#include <string>
+#include <filesystem>
+#include "GrayImage.h"
 #include "preprocessing.h"
+#include "morphology.h"
+
+namespace fs = std::filesystem;
 
 int main(int argc, char* argv[]) {
-    // 1. Controllo degli argomenti da terminale
-    if (argc < 3) {
-        std::cerr << "Uso corretto: " << argv[0] << " <cartella_input> <cartella_output>" << std::endl;
-        return 1;
+    std::string raw_data_path = "../data/input";
+    std::string grayscale_path = "../data/dataset_grayscale";
+    std::string final_output_path = "../data/output";
+
+    std::cout << "--- FASE 1: Conversione in scala di grigi ---" << std::endl;
+    preprocessDatasetToGrayscale(raw_data_path, grayscale_path);
+
+std::cout << "--- FASE 2: Applicazione Erosione ---" << std::endl;
+    
+    if (!fs::exists(final_output_path)) {
+        fs::create_directories(final_output_path);
     }
 
-    std::string input_folder = argv[1];
-    std::string output_folder = argv[2];
+    for (const auto& entry : fs::directory_iterator(grayscale_path)) {
+        if (entry.is_regular_file()) {
+            std::string filepath = entry.path().string();
+            std::string filename = entry.path().filename().string();
 
-    // 2. Esecuzione del pre-processing (carica, converte e salva)
-    preprocessDatasetToGrayscale(input_folder, output_folder);
+            GrayImage img;
+            if (img.load(filepath)) {
+                GrayImage eroded = erode_sequential(img, 3);
 
-    // 3. Qui aggiungeremo le chiamate per l'Erosione e Dilatazione
-    std::cout << "--- Inizio fase di Morfologia Matematica ---" << std::endl;
-    std::cout << "Elaborazione in corso..." << std::endl;
+                std::string out_path = final_output_path + "/eroded_" + filename;
+                if (eroded.save(out_path)) {
+                    std::cout << "Successo: " << filename << " erosa e salvata." << std::endl;
+                }
+            }
+        }
+    }
 
+    std::cout << "\nProcesso completato!" << std::endl;
     return 0;
 }

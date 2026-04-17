@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 find_package(OpenMP REQUIRED)
 
-add_executable(main src/main.cpp src/preprocessing.cpp)
+add_executable(main src/main.cpp src/preprocessing.cpp src/morphology.cpp src/GrayImage.cpp)
 
 target_include_directories(main PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 

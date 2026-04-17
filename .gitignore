@@ -6,4 +6,5 @@ out/
 .idea/
 
 
-data/
+data/**/*
+!**/ .gitkeep
