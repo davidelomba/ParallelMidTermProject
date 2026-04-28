@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
 
                 std::string out_path = eroded_output_path + "/eroded_" + filename;
                 if (eroded.save(out_path)) {
-                    std::cout << "Successo: " << filename << " erosa e salvata." << std::endl;
+                    std::cout << "Successo: " << filename << " salvata." << std::endl;
                 }
             }
         }
@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
 
                 std::string out_path = dilated_output_path + "/dilated_" + filename;
                 if (dilated.save(out_path)) {
-                    std::cout << "Successo: " << filename << " dilatata e salvata." << std::endl;
+                    std::cout << "Successo: " << filename << " salvata." << std::endl;
                 }
             }
         }
@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
 
                 std::string out_path = opening_output_path + "/opened_" + filename;
                 if (opened.save(out_path)) {
-                    std::cout << "Successo: " << filename << " aperta e salvata." << std::endl;
+                    std::cout << "Successo: " << filename << " salvata." << std::endl;
                 }
             }
         }
@@ -107,7 +107,7 @@ int main(int argc, char* argv[]) {
 
                 std::string out_path = closing_output_path + "/closed_" + filename;
                 if (closed.save(out_path)) {
-                    std::cout << "Successo: " << filename << " chiusa e salvata." << std::endl;
+                    std::cout << "Successo: " << filename << " salvata." << std::endl;
                 }
             }
         }

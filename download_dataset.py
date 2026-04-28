@@ -7,6 +7,12 @@ def setup_bsds():
     target_dir = "data/raw_bsds"
     final_input_dir = "data/input"
 
+    if os.path.exists(final_input_dir):
+        files = [f for f in os.listdir(final_input_dir) if not f.startswith('.')]
+        if len(files) > 0:
+            print("Dataset già presente in data/input")
+            return
+
     if not os.path.exists("data"):
         os.makedirs("data")
 
