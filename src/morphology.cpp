@@ -50,3 +50,12 @@ GrayImage dilate_sequential(const GrayImage& input, int kernel_size) {
     return output;
 }
 
+GrayImage opening_sequential(const GrayImage& input, int kernel_size) {
+    GrayImage temp = erode_sequential(input, kernel_size);
+    return dilate_sequential(temp, kernel_size);
+}
+
+GrayImage closing_sequential(const GrayImage& input, int kernel_size) {
+    GrayImage temp = dilate_sequential(input, kernel_size);
+    return erode_sequential(temp, kernel_size);
+}
