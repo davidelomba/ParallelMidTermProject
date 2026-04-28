@@ -8,7 +8,6 @@
 
 GrayImage::GrayImage(int w, int h) : width(w), height(h), data(w * h, 0) {}
 
-// Nel metodo load di GrayImage.cpp
 bool GrayImage::load(const std::string& path) {
     int w, h, channels;
     unsigned char* img = stbi_load(path.c_str(), &w, &h, &channels, 1);
