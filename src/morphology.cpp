@@ -7,14 +7,17 @@ GrayImage erode_sequential(const GrayImage& input, int kernel_size) {
     GrayImage output(w, h);
     int offset = kernel_size / 2;
 
+    unsigned char min_val;
+    int ky, kx, nx, ny;
+
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
-            unsigned char min_val = 255;
+            min_val = 255;
 
-            for (int ky = -offset; ky <= offset; ++ky) {
-                for (int kx = -offset; kx <= offset; ++kx) {
-                    int nx = std::max(0, std::min(w - 1, x + kx));
-                    int ny = std::max(0, std::min(h - 1, y + ky));
+            for (ky = -offset; ky <= offset; ++ky) {
+                for (kx = -offset; kx <= offset; ++kx) {
+                    nx = std::max(0, std::min(w - 1, x + kx));
+                    ny = std::max(0, std::min(h - 1, y + ky));
 
                     min_val = std::min(min_val, input.getPixel(nx, ny));
                     
@@ -32,14 +35,17 @@ GrayImage dilate_sequential(const GrayImage& input, int kernel_size) {
     GrayImage output(w, h);
     int offset = kernel_size / 2;
 
+    unsigned char max_val;
+    int ky, kx, nx, ny;
+
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
-            unsigned char max_val = 0;
+            max_val = 0;
 
-            for (int ky = -offset; ky <= offset; ++ky) {
-                for (int kx = -offset; kx <= offset; ++kx) {
-                    int nx = std::max(0, std::min(w - 1, x + kx));
-                    int ny = std::max(0, std::min(h - 1, y + ky));
+            for (ky = -offset; ky <= offset; ++ky) {
+                for (kx = -offset; kx <= offset; ++kx) {
+                    nx = std::max(0, std::min(w - 1, x + kx));
+                    ny = std::max(0, std::min(h - 1, y + ky));
 
                     max_val = std::max(max_val, input.getPixel(nx, ny));
                 }
@@ -66,6 +72,9 @@ GrayImage erode_parallel(const GrayImage& input, int kernel_size) {
     GrayImage output(w, h);
     int offset = kernel_size / 2;
 
+    unsigned char min_val;
+    int ky, kx, nx, ny;
+
     #pragma omp parallel for default(none) \
     shared(input, output, w, h, offset) \
     private(min_val, ky, kx, nx, ny) \
@@ -73,13 +82,13 @@ GrayImage erode_parallel(const GrayImage& input, int kernel_size) {
     // #pragma omp parallel for collapse(2)
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
-            unsigned char min_val = 255;
+            min_val = 255;
 
-            for (int ky = -offset; ky <= offset; ++ky) {
+            for (ky = -offset; ky <= offset; ++ky) {
                 //#pragma omp simd(reduction(min:min_val))
-                for (int kx = -offset; kx <= offset; ++kx) {
-                    int nx = std::max(0, std::min(w - 1, x + kx));
-                    int ny = std::max(0, std::min(h - 1, y + ky));
+                for (kx = -offset; kx <= offset; ++kx) {
+                    nx = std::max(0, std::min(w - 1, x + kx));
+                    ny = std::max(0, std::min(h - 1, y + ky));
 
                     min_val = std::min(min_val, input.getPixel(nx, ny));
                     
@@ -99,6 +108,9 @@ GrayImage dilate_parallel(const GrayImage& input, int kernel_size) {
     GrayImage output(w, h);
     int offset = kernel_size / 2;
 
+    unsigned char max_val;
+    int ky, kx, nx, ny;
+
     #pragma omp parallel for default(none) \
     shared(input, output, w, h, offset) \
     private(max_val, ky, kx, nx, ny) \
@@ -106,14 +118,14 @@ GrayImage dilate_parallel(const GrayImage& input, int kernel_size) {
     // #pragma omp parallel for collapse(2)
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
-            unsigned char max_val = 0;
+            max_val = 0;
 
             for (int ky = -offset; ky <= offset; ++ky) {
                 //#pragma omp simd(reduction(max:max_val))
-                for (int kx = -offset; kx <= offset; ++kx) {
-                    int nx = std::max(0, std::min(w - 1, x + kx));
-                    int ny = std::max(0, std::min(h - 1, y + ky));
-                    
+                for (kx = -offset; kx <= offset; ++kx) {
+                    nx = std::max(0, std::min(w - 1, x + kx));
+                    ny = std::max(0, std::min(h - 1, y + ky));
+
                     max_val = std::max(max_val, input.getPixel(nx, ny));
                 }
             }
