@@ -5,6 +5,9 @@ out/
 .vscode/
 .idea/
 
+.venv/
+
+
 
 data/**/*
 !**/.gitkeep

@@ -4,31 +4,32 @@ import shutil
 
 def setup_bsds():
     repo_url = "https://github.com/BIDS/BSDS500.git"
-    target_dir = "data/raw_bsds"
-    final_input_dir = "data/input"
+    raw_git_dir = "data/raw_bsds_git"
 
-    if os.path.exists(final_input_dir):
-        files = [f for f in os.listdir(final_input_dir) if not f.startswith('.')]
-        if len(files) > 0:
-            print("Dataset già presente in data/input")
-            return
+    # Defininzione del percorso di destinazione per le immagini master (da cui poi genereremo le immagini in scala di grigi)    
+    master_source_dir = "data/input/scale_1.0x"
 
-    if not os.path.exists("data"):
-        os.makedirs("data")
+    # Controllo se i dati esistono già
+    if os.path.exists(master_source_dir) and any(f.endswith('.jpg') for f in os.listdir(master_source_dir)):
+        print(f"Dataset originale già presente in {master_source_dir}. Salto il download.")
+        return
 
-    print("Scaricando il dataset BSDS500...")
-    subprocess.run(["git", "clone", repo_url, target_dir])
+    print("Scaricando il dataset BSDS500 da GitHub...")
 
-    src_images = os.path.join(target_dir, "BSDS500", "data", "images", "test")
+    # Clone shallow per scaricare solo l'ultimo commit
+    subprocess.run(["git", "clone", "--depth", "1", repo_url, raw_git_dir])
+
+    src_images_path = os.path.join(raw_git_dir, "BSDS500", "data", "images", "test")
     
-    if not os.path.exists(final_input_dir):
-        os.makedirs(final_input_dir)
+    os.makedirs(master_source_dir, exist_ok=True)
 
-    for filename in os.listdir(src_images):
-        if filename.endswith(".jpg"):
-            shutil.copy(os.path.join(src_images, filename), final_input_dir)
+    count = 0
+    for filename in os.listdir(src_images_path):
+        if filename.lower().endswith(".jpg"):
+            shutil.copy(os.path.join(src_images_path, filename), master_source_dir)
+            count += 1
     
-    print(f"Setup completato! Le immagini sono state copiate in '{final_input_dir}'.")
+    print(f"Download completato! {count} immagini master copiate in '{master_source_dir}'.")
 
 if __name__ == "__main__":
     setup_bsds()

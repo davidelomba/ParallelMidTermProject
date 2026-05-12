@@ -68,12 +68,12 @@ void run_morphology_benchmark(const std::string& input_path, const std::string& 
 
     if (count > 0) {
         double avg_speedup = total_t_seq / total_t_par;
-        std::cout << "\n>>> CONCLUSIONE EROSIONE <<<" << std::endl;
+        std::cout << "\n>>> Conclusione " << label << " <<<" << std::endl;
         std::cout << "Tempo totale Seq: " << total_t_seq << "s" << std::endl;
         std::cout << "Tempo totale Par: " << total_t_par << "s" << std::endl;
         std::cout << "SPEEDUP MEDIO:    " << avg_speedup << "x" << std::endl;
         std::cout << "----------------------------\n" << std::endl;
     } else {
-        std::cout << "Nessun file processato per l'erosione." << std::endl;
+        std::cout << "Nessun file processato per " << label << "." << std::endl;
     }
 }

@@ -9,3 +9,8 @@ GrayImage erode_parallel(const GrayImage& input, int kernel_size);
 GrayImage dilate_parallel(const GrayImage& input, int kernel_size);
 GrayImage opening_parallel(const GrayImage& input, int kernel_size);
 GrayImage closing_parallel(const GrayImage& input, int kernel_size);
+
+GrayImage erode_parallel_tiled(const GrayImage& input, int kernel_size);
+GrayImage dilate_parallel_tiled(const GrayImage& input, int kernel_size);
+GrayImage opening_parallel_tiled(const GrayImage& input, int kernel_size);
+GrayImage closing_parallel_tiled(const GrayImage& input, int kernel_size);
