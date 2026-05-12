@@ -85,7 +85,7 @@ GrayImage erode_parallel(const GrayImage& input, int kernel_size) {
             min_val = 255;
 
             for (ky = -offset; ky <= offset; ++ky) {
-                //#pragma omp simd(reduction(min:min_val))
+                #pragma omp simd reduction(min:min_val)
                 for (kx = -offset; kx <= offset; ++kx) {
                     nx = std::max(0, std::min(w - 1, x + kx));
                     ny = std::max(0, std::min(h - 1, y + ky));
@@ -121,7 +121,7 @@ GrayImage dilate_parallel(const GrayImage& input, int kernel_size) {
             max_val = 0;
 
             for (int ky = -offset; ky <= offset; ++ky) {
-                //#pragma omp simd(reduction(max:max_val))
+                #pragma omp simd reduction(max:max_val)
                 for (kx = -offset; kx <= offset; ++kx) {
                     nx = std::max(0, std::min(w - 1, x + kx));
                     ny = std::max(0, std::min(h - 1, y + ky));
