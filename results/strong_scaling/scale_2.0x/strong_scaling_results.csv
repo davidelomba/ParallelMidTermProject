@@ -1,0 +1,25 @@
+Law,Scale,Threads,Operation,TimeSeq,TimePar,Speedup,Efficiency
+Strong Scaling,scale_2.0x,1,Erosione,25.8793,26.3089,0.983669,0.983669
+Strong Scaling,scale_2.0x,1,Dilatazione,19.3167,19.5887,0.986115,0.986115
+Strong Scaling,scale_2.0x,1,Opening,38.1088,38.7704,0.982936,0.982936
+Strong Scaling,scale_2.0x,1,Closing,38.3864,39.1707,0.979977,0.979977
+Strong Scaling,scale_2.0x,2,Erosione,19.529,10.9491,1.78362,0.891809
+Strong Scaling,scale_2.0x,2,Dilatazione,19.6828,10.855,1.81325,0.906625
+Strong Scaling,scale_2.0x,2,Opening,39.312,20.8962,1.8813,0.940651
+Strong Scaling,scale_2.0x,2,Closing,39.3014,20.8994,1.88051,0.940253
+Strong Scaling,scale_2.0x,4,Erosione,19.7849,6.39777,3.09248,0.773119
+Strong Scaling,scale_2.0x,4,Dilatazione,21.1688,6.99147,3.02781,0.756952
+Strong Scaling,scale_2.0x,4,Opening,39.8514,12.6347,3.15414,0.788534
+Strong Scaling,scale_2.0x,4,Closing,39.9855,12.6143,3.16985,0.792463
+Strong Scaling,scale_2.0x,8,Erosione,20.1239,4.56831,4.40511,0.550639
+Strong Scaling,scale_2.0x,8,Dilatazione,20.1423,4.46005,4.51616,0.56452
+Strong Scaling,scale_2.0x,8,Opening,40.3089,9.07904,4.43977,0.554971
+Strong Scaling,scale_2.0x,8,Closing,40.1058,8.89593,4.50833,0.563541
+Strong Scaling,scale_2.0x,16,Erosione,20.1419,4.49002,4.48594,0.280371
+Strong Scaling,scale_2.0x,16,Dilatazione,20.1983,4.49217,4.49634,0.281021
+Strong Scaling,scale_2.0x,16,Opening,40.0895,8.86156,4.52397,0.282748
+Strong Scaling,scale_2.0x,16,Closing,40.2448,8.83799,4.55361,0.284601
+Strong Scaling,scale_2.0x,32,Erosione,19.9097,4.4459,4.47821,0.139944
+Strong Scaling,scale_2.0x,32,Dilatazione,20.3233,4.52311,4.49321,0.140413
+Strong Scaling,scale_2.0x,32,Opening,40.2653,8.84927,4.55013,0.142192
+Strong Scaling,scale_2.0x,32,Closing,40.2053,8.83141,4.55253,0.142267

@@ -1,0 +1,13 @@
+Law,Scale,Threads,Operation,TimeSeq,TimePar,Speedup,Efficiency
+Weak Scaling,scale_1.0x,1,Erosione,5.34093,5.65193,0.944975,0.944975
+Weak Scaling,scale_1.0x,1,Dilatazione,5.36885,5.5968,0.95927,0.95927
+Weak Scaling,scale_1.0x,1,Opening,10.2108,10.5538,0.967503,0.967503
+Weak Scaling,scale_1.0x,1,Closing,10.2336,10.5415,0.970797,0.970797
+Weak Scaling,scale_2.0x,4,Erosione,20.4251,6.63752,3.07722,0.769306
+Weak Scaling,scale_2.0x,4,Dilatazione,20.6567,6.57893,3.13983,0.784958
+Weak Scaling,scale_2.0x,4,Opening,40.1566,12.7198,3.15701,0.789251
+Weak Scaling,scale_2.0x,4,Closing,40.1249,12.5898,3.1871,0.796776
+Weak Scaling,scale_4.0x,16,Erosione,75.8246,18.6464,4.06646,0.254154
+Weak Scaling,scale_4.0x,16,Dilatazione,76.3659,18.9339,4.03328,0.25208
+Weak Scaling,scale_4.0x,16,Opening,153.808,40.0162,3.84365,0.240228
+Weak Scaling,scale_4.0x,16,Closing,154.146,39.556,3.8969,0.243556
