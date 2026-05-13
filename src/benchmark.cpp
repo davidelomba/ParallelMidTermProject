@@ -4,6 +4,7 @@
 #include <chrono>
 #include <fstream>
 #include <vector>
+#include <thread>
 #include <omp.h>
 #include "morphology.h"
 
@@ -109,19 +110,35 @@ void run_strong_scaling_test(const std::string& scale, const std::vector<int>& t
 
     for (int t : thread_configs) {
         std::cout << "\n>>> Configurazione: " << t << " Threads <<<" << std::endl;
+
+        // Fai riposare la CPU per 2 secondi per abbassare la temperatura
+        std::this_thread::sleep_for(std::chrono::seconds(3));
+
         omp_set_num_threads(t);
 
         auto r_ero = run_morphology_benchmark(input_path, output_base + "/eroded", "Erosione", 3, erode_sequential, erode_parallel);
         save_benchmark_to_csv(csv_file, "Strong Scaling", scale, t, "Erosione", r_ero);
 
+        // Fai riposare la CPU per 2 secondi per abbassare la temperatura
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+
         auto r_dil = run_morphology_benchmark(input_path, output_base + "/dilated", "Dilatazione", 3, dilate_sequential, dilate_parallel);
         save_benchmark_to_csv(csv_file, "Strong Scaling", scale, t, "Dilatazione", r_dil);
+
+        // Fai riposare la CPU per 2 secondi per abbassare la temperatura
+        std::this_thread::sleep_for(std::chrono::seconds(2));
 
         auto r_ope = run_morphology_benchmark(input_path, output_base + "/opening", "Opening", 3, opening_sequential, opening_parallel);
         save_benchmark_to_csv(csv_file, "Strong Scaling", scale, t, "Opening", r_ope);
 
+        // Fai riposare la CPU per 2 secondi per abbassare la temperatura
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+
         auto r_clo = run_morphology_benchmark(input_path, output_base + "/closing", "Closing", 3, closing_sequential, closing_parallel);
         save_benchmark_to_csv(csv_file, "Strong Scaling", scale, t, "Closing", r_clo);
+
+        // Fai riposare la CPU per 2 secondi per abbassare la temperatura
+        std::this_thread::sleep_for(std::chrono::seconds(2));
     }
 
     csv_file.close();
