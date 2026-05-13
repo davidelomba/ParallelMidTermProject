@@ -2,9 +2,19 @@
 #include <iostream>
 #include <filesystem>
 #include <chrono>
+#include <fstream>
+#include <vector>
+#include <omp.h>
 #include "morphology.h"
 
 namespace fs = std::filesystem;
+
+void save_benchmark_to_csv(std::ofstream& file, std::string law_name, std::string scale, int threads, std::string op, BenchResult res) {
+    double efficiency = (threads > 0) ? (res.avg_speedup / threads) : 0.0;
+    file << law_name << "," << scale << "," << threads << "," << op << "," 
+         << res.total_t_seq << "," << res.total_t_par << "," << res.avg_speedup << "," << efficiency << "\n";
+    file.flush();
+}
 
 // Funzione di utilità per validare che il risultato parallelo sia identico al sequenziale
 bool validate(const GrayImage& seq, const GrayImage& par) {
@@ -17,8 +27,7 @@ bool validate(const GrayImage& seq, const GrayImage& par) {
     return true;
 }
 
-void run_morphology_benchmark(const std::string& input_path, const std::string& output_path, const std::string& label, int kernel_size, MorphoFunc seq_func, MorphoFunc par_func) 
-{
+BenchResult run_morphology_benchmark(const std::string& input_path, const std::string& output_path, const std::string& label, int kernel_size, MorphoFunc seq_func, MorphoFunc par_func) {
     if (!fs::exists(output_path)) {
         fs::create_directories(output_path);
     }
@@ -73,7 +82,96 @@ void run_morphology_benchmark(const std::string& input_path, const std::string& 
         std::cout << "Tempo totale Par: " << total_t_par << "s" << std::endl;
         std::cout << "SPEEDUP MEDIO:    " << avg_speedup << "x" << std::endl;
         std::cout << "----------------------------\n" << std::endl;
-    } else {
-        std::cout << "Nessun file processato per " << label << "." << std::endl;
+        return {total_t_seq, total_t_par, avg_speedup};
     }
+    std::cout << "Nessun file processato per " << label << "." << std::endl;
+    return {0, 0, 0};
+    
+}
+
+void run_strong_scaling_test(const std::string& scale, const std::vector<int>& thread_configs) {
+
+    std::string base_dir = "../results/strong_scaling/" + scale;
+    if (!fs::exists(base_dir)) {
+        fs::create_directories(base_dir);
+    }
+
+    std::string csv_path = base_dir + "/strong_scaling_results.csv";
+
+    std::ofstream csv_file(csv_path);
+    csv_file << "Law,Scale,Threads,Operation,TimeSeq,TimePar,Speedup,Efficiency\n";
+
+    std::string input_path = "../data/dataset_grayscale/" + scale;
+    std::string output_base = "../data/output/" + scale;
+
+    std::cout << "=== STRONG SCALING TEST: " << scale << " ===" << std::endl;
+    std::cout << "CSV: " << csv_path << std::endl;
+
+    for (int t : thread_configs) {
+        std::cout << "\n>>> Configurazione: " << t << " Threads <<<" << std::endl;
+        omp_set_num_threads(t);
+
+        auto r_ero = run_morphology_benchmark(input_path, output_base + "/eroded", "Erosione", 3, erode_sequential, erode_parallel);
+        save_benchmark_to_csv(csv_file, "Strong Scaling", scale, t, "Erosione", r_ero);
+
+        auto r_dil = run_morphology_benchmark(input_path, output_base + "/dilated", "Dilatazione", 3, dilate_sequential, dilate_parallel);
+        save_benchmark_to_csv(csv_file, "Strong Scaling", scale, t, "Dilatazione", r_dil);
+
+        auto r_ope = run_morphology_benchmark(input_path, output_base + "/opening", "Opening", 3, opening_sequential, opening_parallel);
+        save_benchmark_to_csv(csv_file, "Strong Scaling", scale, t, "Opening", r_ope);
+
+        auto r_clo = run_morphology_benchmark(input_path, output_base + "/closing", "Closing", 3, closing_sequential, closing_parallel);
+        save_benchmark_to_csv(csv_file, "Strong Scaling", scale, t, "Closing", r_clo);
+    }
+
+    csv_file.close();
+    std::cout << "\n[OK] Test Strong Scaling completato." << std::endl;
+}
+
+void run_weak_scaling_test() {
+    std::string base_dir = "../results/weak_scaling";
+    if (!fs::exists(base_dir)) fs::create_directories(base_dir);
+
+    std::string csv_path = base_dir + "/weak_scaling_results.csv";
+    std::ofstream csv_file(csv_path);
+    csv_file << "Law,Scale,Threads,Operation,TimeSeq,TimePar,Speedup,Efficiency\n";
+
+
+    std::vector<std::pair<int, std::string>> config = {
+        {1, "scale_1.0x"},
+        {4, "scale_2.0x"},
+        {16, "scale_4.0x"}
+    };
+
+    std::cout << "=== WEAK SCALING TEST ===" << std::endl;
+
+    for (auto const& [t, scale] : config) {
+        std::cout << "\n>>> WEAK SCALING: " << t << " Threads su " << scale << " <<<" << std::endl;
+        
+        std::string input_path = "../data/dataset_grayscale/" + scale;
+        std::string output_base = "../data/output/" + scale;
+
+        if (!fs::exists(input_path)) {
+            std::cout << "Skipping " << scale << " (cartella non trovata)" << std::endl;
+            continue;
+        }
+
+        omp_set_num_threads(t);
+
+        // Eseguiamo le operazioni (usiamo la stessa funzione di salvataggio dell'altra volta)
+        auto r_ero = run_morphology_benchmark(input_path, output_base + "/eroded", "Erosione", 3, erode_sequential, erode_parallel);
+        save_benchmark_to_csv(csv_file, "Weak Scaling", scale, t, "Erosione", r_ero);
+
+        auto r_dil = run_morphology_benchmark(input_path, output_base + "/dilated", "Dilatazione", 3, dilate_sequential, dilate_parallel);
+        save_benchmark_to_csv(csv_file, "Weak Scaling", scale, t, "Dilatazione", r_dil);
+
+        auto r_ope = run_morphology_benchmark(input_path, output_base + "/opening", "Opening", 3, opening_sequential, opening_parallel);
+        save_benchmark_to_csv(csv_file, "Weak Scaling", scale, t, "Opening", r_ope);
+
+        auto r_clo = run_morphology_benchmark(input_path, output_base + "/closing", "Closing", 3, closing_sequential, closing_parallel);
+        save_benchmark_to_csv(csv_file, "Weak Scaling", scale, t, "Closing", r_clo);
+    }
+
+    csv_file.close();
+    std::cout << "\n[OK] Test Weak Scaling completato." << std::endl;
 }
