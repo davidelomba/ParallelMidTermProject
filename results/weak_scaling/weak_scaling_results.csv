@@ -1,13 +1,13 @@
-Law,Scale,Threads,Operation,TimeSeq,TimePar,Speedup,Efficiency
-Weak Scaling,scale_1.0x,1,Erosione,5.34093,5.65193,0.944975,0.944975
-Weak Scaling,scale_1.0x,1,Dilatazione,5.36885,5.5968,0.95927,0.95927
-Weak Scaling,scale_1.0x,1,Opening,10.2108,10.5538,0.967503,0.967503
-Weak Scaling,scale_1.0x,1,Closing,10.2336,10.5415,0.970797,0.970797
-Weak Scaling,scale_2.0x,4,Erosione,20.4251,6.63752,3.07722,0.769306
-Weak Scaling,scale_2.0x,4,Dilatazione,20.6567,6.57893,3.13983,0.784958
-Weak Scaling,scale_2.0x,4,Opening,40.1566,12.7198,3.15701,0.789251
-Weak Scaling,scale_2.0x,4,Closing,40.1249,12.5898,3.1871,0.796776
-Weak Scaling,scale_4.0x,16,Erosione,75.8246,18.6464,4.06646,0.254154
-Weak Scaling,scale_4.0x,16,Dilatazione,76.3659,18.9339,4.03328,0.25208
-Weak Scaling,scale_4.0x,16,Opening,153.808,40.0162,3.84365,0.240228
-Weak Scaling,scale_4.0x,16,Closing,154.146,39.556,3.8969,0.243556
+Test,Scale,Threads,Operation,TimeSeq,TimePar,Speedup,Efficiency
+Weak Scaling,scale_1.0x,1,Erosione,5.27806,5.05303,1.04453,1.04453
+Weak Scaling,scale_1.0x,1,Dilatazione,5.32039,5.15419,1.03225,1.03225
+Weak Scaling,scale_1.0x,1,Opening,10.1821,9.9726,1.02101,1.02101
+Weak Scaling,scale_1.0x,1,Closing,10.0846,9.85224,1.02358,1.02358
+Weak Scaling,scale_2.0x,4,Erosione,19.7614,6.35337,3.11038,0.777594
+Weak Scaling,scale_2.0x,4,Dilatazione,19.8004,6.38004,3.1035,0.775874
+Weak Scaling,scale_2.0x,4,Opening,39.4719,12.0999,3.26216,0.81554
+Weak Scaling,scale_2.0x,4,Closing,39.6172,12.1521,3.2601,0.815026
+Weak Scaling,scale_4.0x,16,Erosione,75.1402,18.4726,4.06767,0.254229
+Weak Scaling,scale_4.0x,16,Dilatazione,75.779,18.8058,4.02955,0.251847
+Weak Scaling,scale_4.0x,16,Opening,150.121,38.7014,3.87895,0.242434
+Weak Scaling,scale_4.0x,16,Closing,150.373,38.8382,3.87178,0.241986

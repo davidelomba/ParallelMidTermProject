@@ -1,0 +1,17 @@
+Test,Scale,KernelSize,Threads,Operation,TotalTimeStandard,TotalTimeSeparable,SeparableSpeedup
+Separable Evaluation,scale_2.0x,3,8,Erosione,11.4862,6.13865,1.87113
+Separable Evaluation,scale_2.0x,3,8,Dilatazione,11.341,6.16324,1.84011
+Separable Evaluation,scale_2.0x,3,8,Opening,21.7964,11.7154,1.86049
+Separable Evaluation,scale_2.0x,3,8,Closing,21.4798,11.1135,1.93277
+Separable Evaluation,scale_2.0x,7,8,Erosione,50.6676,11.5157,4.39985
+Separable Evaluation,scale_2.0x,7,8,Dilatazione,53.9331,12.7833,4.21901
+Separable Evaluation,scale_2.0x,7,8,Opening,111.307,25.8251,4.31004
+Separable Evaluation,scale_2.0x,7,8,Closing,110.144,26.012,4.23435
+Separable Evaluation,scale_2.0x,11,8,Erosione,123.091,19.3454,6.36284
+Separable Evaluation,scale_2.0x,11,8,Dilatazione,127.505,19.8368,6.4277
+Separable Evaluation,scale_2.0x,11,8,Opening,242.487,38.2308,6.34272
+Separable Evaluation,scale_2.0x,11,8,Closing,160.867,24.2669,6.62904
+Separable Evaluation,scale_2.0x,15,8,Erosione,145.196,16.1832,8.97202
+Separable Evaluation,scale_2.0x,15,8,Dilatazione,150.522,16.6757,9.02642
+Separable Evaluation,scale_2.0x,15,8,Opening,294.814,32.0675,9.19354
+Separable Evaluation,scale_2.0x,15,8,Closing,289.688,31.9627,9.06332
