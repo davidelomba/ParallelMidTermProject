@@ -257,3 +257,54 @@ void run_separable_test(const std::vector<std::string>& scales, int threads, con
     csv_file.close();
     std::cout << "\n[OK] Test Separable Parallelism completato con successo." << std::endl;
 }
+
+void run_pipeline_test(const std::vector<std::string>& scales, const std::vector<int>& kernel_sizes) {    
+    std::string base_dir = "../results/pipeline";
+    if (!fs::exists(base_dir)) {
+        fs::create_directories(base_dir);
+    }
+
+    std::string csv_path = base_dir + "/pipeline_results.csv";
+    std::ofstream csv_file(csv_path);
+    
+    csv_file << "Test,Scale,KernelSize,Threads,Operation,TotalTimeStandard,TotalTimePipeline,PipelineSpeedup\n";
+
+    std::cout << "=== PIPELINE PARALLELISM TEST ===" << std::endl;
+    std::cout << "CSV: " << csv_path << std::endl;
+
+    // Fissiamo forzatamente a 2 i thread perché l'architettura è Producer-Consumer
+    omp_set_num_threads(2);
+
+    for (const auto& scale : scales) {
+        std::string input_path = "../data/dataset_grayscale/" + scale;
+        std::string output_base = "../data/output/" + scale;
+
+        if (!fs::exists(input_path)) {
+            std::cerr << "[AVVISO] Cartella non trovata " << input_path << std::endl;
+            continue;
+        }
+
+        for (int k : kernel_sizes) {
+            std::cout << "\n>>> Scale: " << scale << " | Kernel Size: " << k << "x" << k << " <<<" << std::endl;
+
+            // --- TEST 1: OPENING ---
+            std::this_thread::sleep_for(std::chrono::seconds(2));
+            auto r_ope = run_morphology_benchmark(input_path, output_base + "/opening", "Opening", k, opening_parallel, opening_pipeline);
+            
+            csv_file << "Pipeline Evaluation," << scale << "," << k << ",2,Opening," 
+                     << r_ope.total_t_func1 << "," << r_ope.total_t_func2 << "," << r_ope.avg_speedup << "\n";
+
+            // --- TEST 2: CLOSING ---
+            std::this_thread::sleep_for(std::chrono::seconds(2));
+            auto r_clo = run_morphology_benchmark(input_path, output_base + "/closing", "Closing", k, closing_parallel, closing_pipeline);
+            
+            csv_file << "Pipeline Evaluation," << scale << "," << k << ",2,Closing," 
+                     << r_clo.total_t_func1 << "," << r_clo.total_t_func2 << "," << r_clo.avg_speedup << "\n";
+            
+            csv_file.flush();
+        }
+    }
+
+    csv_file.close();
+    std::cout << "\n[OK] Test Pipeline Parallelism completato con successo." << std::endl;
+}

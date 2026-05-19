@@ -1,0 +1,9 @@
+Test,Scale,KernelSize,Threads,Operation,TotalTimeStandard,TotalTimePipeline,PipelineSpeedup
+Pipeline Evaluation,scale_2.0x,3,2,Opening,20.6404,14.949,1.38072
+Pipeline Evaluation,scale_2.0x,3,2,Closing,21.2845,15.6281,1.36194
+Pipeline Evaluation,scale_2.0x,7,2,Opening,117.061,74.0341,1.58118
+Pipeline Evaluation,scale_2.0x,7,2,Closing,115.739,74.8914,1.54543
+Pipeline Evaluation,scale_2.0x,11,2,Opening,269.748,182.452,1.47846
+Pipeline Evaluation,scale_2.0x,11,2,Closing,269.361,186.451,1.44467
+Pipeline Evaluation,scale_2.0x,15,2,Opening,487.747,324.772,1.50182
+Pipeline Evaluation,scale_2.0x,15,2,Closing,486.292,327.163,1.48639

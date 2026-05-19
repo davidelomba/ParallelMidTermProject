@@ -238,6 +238,7 @@ GrayImage erode_separable_parallel(const GrayImage& input, int kernel_size) {
         for (int x = 0; x < w; ++x) {
             unsigned char min_val = 255;
             
+            //#pragma omp simd reduction(min:min_val)
             for (int ky = -offset; ky <= offset; ++ky) {
                 int ny = std::max(0, std::min(h - 1, y + ky));
                 min_val = std::min(min_val, temp.getPixel(x, ny));
@@ -262,7 +263,7 @@ GrayImage dilate_separable_parallel(const GrayImage& input, int kernel_size) {
         for (int x = 0; x < w; ++x) {
             unsigned char max_val = 0;
             
-            #pragma omp simd reduction(max:max_val)
+            //#pragma omp simd reduction(max:max_val)
             for (int kx = -offset; kx <= offset; ++kx) {
                 int nx = std::max(0, std::min(w - 1, x + kx));
                 max_val = std::max(max_val, input.getPixel(nx, y));
@@ -297,3 +298,150 @@ GrayImage closing_separable_parallel(const GrayImage& input, int kernel_size) {
     return erode_separable_parallel(temp, kernel_size);
 }
 
+
+void compute_erosion_for_row(const GrayImage& input, GrayImage& output, int y, int kernel_size) {
+    int width = input.getWidth();
+    int height = input.getHeight();
+    int radius = kernel_size / 2;
+
+    for (int x = 0; x < width; ++x) {
+        unsigned char min_val = 255; 
+
+        for (int ky = -radius; ky <= radius; ++ky) {
+            int ny = std::max(0, std::min(y + ky, height - 1));
+            
+            for (int kx = -radius; kx <= radius; ++kx) {
+                int nx = std::max(0, std::min(x + kx, width - 1));
+
+                unsigned char pixel = input.getPixel(nx, ny); 
+                if (pixel < min_val) {
+                    min_val = pixel;
+                }
+            }
+        }
+        output.setPixel(x, y, min_val); 
+    }
+}
+
+void compute_dilation_for_row(const GrayImage& input, GrayImage& output, int y, int kernel_size) {
+    int width = input.getWidth();
+    int height = input.getHeight();
+    int radius = kernel_size / 2;
+
+    for (int x = 0; x < width; ++x) {
+        unsigned char max_val = 0; 
+
+        for (int ky = -radius; ky <= radius; ++ky) {
+            int ny = std::max(0, std::min(y + ky, height - 1));
+
+            for (int kx = -radius; kx <= radius; ++kx) {
+                int nx = std::max(0, std::min(x + kx, width - 1));
+
+                unsigned char pixel = input.getPixel(nx, ny); 
+                if (pixel > max_val) {
+                    max_val = pixel;
+                }
+            }
+        }
+        output.setPixel(x, y, max_val); 
+    }
+}
+
+
+GrayImage opening_pipeline(const GrayImage& input, int kernel_size) {
+    int radius = kernel_size / 2;
+    int width = input.getWidth();
+    int height = input.getHeight();
+    
+    GrayImage temp_eroded(width, height);
+    GrayImage output(width, height);
+    
+    int max_ready_row = -1; 
+    const int chunk_size = 32; 
+
+    #pragma omp parallel num_threads(2) shared(max_ready_row, temp_eroded, output)
+    {
+        #pragma omp sections
+        {
+            // THREAD 0: PRODUCER (EROSIONE)
+            #pragma omp section
+            {
+                for (int y = 0; y < height; ++y) {
+                    compute_erosion_for_row(input, temp_eroded, y, kernel_size);
+                    
+                    if ((y + 1) % chunk_size == 0 || y == height - 1) {
+                        #pragma omp atomic write
+                        max_ready_row = y;
+                    }
+                }
+            }
+
+            // THREAD 1: CONSUMER (DILATAZIONE)
+            #pragma omp section
+            {
+                for (int y = 0; y < height; ++y) {
+                    int needed_row = std::min(y + radius, height - 1);
+                    int current_ready;
+
+                    do {
+                        #pragma omp atomic read
+                        current_ready = max_ready_row;
+                    } while (current_ready < needed_row);
+
+                    compute_dilation_for_row(temp_eroded, output, y, kernel_size);
+                }
+            }
+        } 
+    } 
+    
+    return output;
+}
+
+GrayImage closing_pipeline(const GrayImage& input, int kernel_size) {
+    int radius = kernel_size / 2;
+    int width = input.getWidth();
+    int height = input.getHeight();
+    
+    GrayImage temp_dilated(width, height);
+    GrayImage output(width, height);
+    
+    int max_ready_row = -1; 
+    const int chunk_size = 32; 
+
+    #pragma omp parallel num_threads(2) shared(max_ready_row, temp_dilated, output)
+    {
+        #pragma omp sections
+        {
+            // THREAD 0: PRODUCER (DILATAZIONE)
+            #pragma omp section
+            {
+                for (int y = 0; y < height; ++y) {
+                    compute_dilation_for_row(input, temp_dilated, y, kernel_size);
+                    
+                    if ((y + 1) % chunk_size == 0 || y == height - 1) {
+                        #pragma omp atomic write
+                        max_ready_row = y;
+                    }
+                }
+            }
+
+            // THREAD 1: CONSUMER (EROSIONE)
+            #pragma omp section
+            {
+                for (int y = 0; y < height; ++y) {
+                    int needed_row = std::min(y + radius, height - 1);
+                    int current_ready;
+
+                    do {
+                        #pragma omp atomic read
+                        current_ready = max_ready_row;
+                    } while (current_ready < needed_row);
+
+                    compute_erosion_for_row(temp_dilated, output, y, kernel_size);
+                }
+            }
+        } 
+    } 
+    
+    return output;
+}

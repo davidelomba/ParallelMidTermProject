@@ -19,3 +19,6 @@ GrayImage erode_separable_parallel(const GrayImage& input, int kernel_size);
 GrayImage dilate_separable_parallel(const GrayImage& input, int kernel_size);
 GrayImage opening_separable_parallel(const GrayImage& input, int kernel_size);
 GrayImage closing_separable_parallel(const GrayImage& input, int kernel_size);
+
+GrayImage opening_pipeline(const GrayImage& input, int kernel_size);
+GrayImage closing_pipeline(const GrayImage& input, int kernel_size);

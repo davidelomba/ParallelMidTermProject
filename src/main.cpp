@@ -12,6 +12,7 @@ int main(int argc, char* argv[]) {
 
     std::vector<int> kernel_config = {3, 7, 11, 15};
 
-    run_separable_test({scale_to_test}, max_threads, kernel_config);
+    //run_separable_test({scale_to_test}, max_threads, kernel_config);
+    run_pipeline_test({scale_to_test}, kernel_config);
     return 0;
 }
