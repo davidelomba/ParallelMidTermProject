@@ -34,6 +34,20 @@ BenchResult run_morphology_benchmark(const std::string& input_path, const std::s
     }
     std::cout << "\n--- BENCHMARK: " << label << " (Kernel: " << kernel_size << ") ---" << std::endl;
 
+    //Fase di warm-up: eseguiamo una singola operazione su una sola immagine per scaldare thread pool e cache
+    for (const auto& entry : fs::directory_iterator(input_path)) {
+        std::string ext = entry.path().extension().string();
+        if (entry.is_regular_file() && (ext == ".png" || ext == ".jpg" || ext == ".jpeg")) {
+            GrayImage warm_img;
+            if (warm_img.load(entry.path().string())) {
+                GrayImage dummy1 = func1(warm_img, kernel_size);
+                GrayImage dummy2 = func2(warm_img, kernel_size);
+                std::cout << "[WARM-UP] Thread pool OpenMP e cache pronti." << std::endl;
+                break;
+            }
+        }
+    }
+
     double total_t_1 = 0;
     double total_t_2 = 0;
     int count = 0;
