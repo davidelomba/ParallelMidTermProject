@@ -3,9 +3,12 @@
 #include "GrayImage.h"
 
 struct BenchResult {
-    double total_t_func1;
-    double total_t_func2;
+    double mean_t1;
+    double ci_t1;
+    double mean_t2;
+    double ci_t2;
     double avg_speedup;
+    double ci_speedup;
 };
 
 using MorphoFunc = std::function<GrayImage(const GrayImage&, int)>;
