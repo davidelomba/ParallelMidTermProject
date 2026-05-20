@@ -35,5 +35,5 @@ def scale_grayscale(factors):
     print("\nScaling completato per tutti i fattori.")
 
 if __name__ == "__main__":
-    test_factors = [1.0, 2.0, 4.0, 8.0]
+    test_factors = [1.0, 2.0, 4.0]
     scale_grayscale(test_factors)
