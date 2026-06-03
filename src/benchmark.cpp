@@ -12,6 +12,7 @@
 
 namespace fs = std::filesystem;
 
+// Funzione che salva i risultati del benchmark (tempi, intervalli di confidenza, speedup ed efficienza) in formato CSV
 void save_benchmark_to_csv(std::ofstream& file, std::string Test_name, std::string scale, int threads, std::string op, BenchResult res) {
     double efficiency = (threads > 0) ? (res.avg_speedup / threads) : 0.0;
     file << Test_name << "," << scale << "," << threads << "," << op << "," 
@@ -21,7 +22,7 @@ void save_benchmark_to_csv(std::ofstream& file, std::string Test_name, std::stri
     file.flush();
 }
 
-// Funzione di utilità per validare che il risultato parallelo sia identico al sequenziale
+// Funzione di utilità per verificare che il risultato delle funzioni in esame sia lo stesso
 bool validate(const GrayImage& seq, const GrayImage& par) {
     if (seq.getWidth() != par.getWidth() || seq.getHeight() != par.getHeight()) return false;
     const unsigned char* d_s = seq.getRawData();
@@ -32,13 +33,14 @@ bool validate(const GrayImage& seq, const GrayImage& par) {
     return true;
 }
 
+// Esegue il benchmark per una specifica operazione morfologica su un intero dataset, calcolando medie, speedup e intervalli di confidenza
 BenchResult run_morphology_benchmark(const std::string& input_path, const std::string& output_path, const std::string& label, int kernel_size, MorphoFunc func1, MorphoFunc func2) {
     if (!fs::exists(output_path)) {
         fs::create_directories(output_path);
     }
     std::cout << "\n--- BENCHMARK: " << label << " (Kernel: " << kernel_size << ") ---" << std::endl;
 
-    // Fase di warm-up: eseguiamo una singola operazione su una sola immagine per scaldare thread pool e cache
+    // Fase di warm-up: esegue una singola operazione su una sola immagine per scaldare thread pool e cache
     for (const auto& entry : fs::directory_iterator(input_path)) {
         std::string ext = entry.path().extension().string();
         if (entry.is_regular_file() && (ext == ".png" || ext == ".jpg" || ext == ".jpeg")) {
@@ -170,6 +172,7 @@ BenchResult run_morphology_benchmark(const std::string& input_path, const std::s
     return {0, 0, 0, 0, 0, 0};
 }
 
+// Funzione per il test di strong scaling, valutando l'impatto dell'aumento dei thread su una dimensione dell'immagine fissa
 void run_strong_scaling_test(const std::string& scale, const std::vector<int>& thread_configs) {
     std::string base_dir = "../results/strong_scaling/" + scale;
     if (!fs::exists(base_dir)) {
@@ -179,7 +182,6 @@ void run_strong_scaling_test(const std::string& scale, const std::vector<int>& t
     std::string csv_path = base_dir + "/strong_scaling_results.csv";
     std::ofstream csv_file(csv_path);
     
-    // Header aggiornato con colonne dedicate per gli intervalli di confidenza (CI)
     csv_file << "Test,Scale,Threads,Operation,TimeSeq_Mean,TimeSeq_CI,TimePar_Mean,TimePar_CI,Speedup_Mean,Speedup_CI,Efficiency\n";
 
     std::string input_path = "../data/dataset_grayscale/" + scale;
@@ -214,6 +216,7 @@ void run_strong_scaling_test(const std::string& scale, const std::vector<int>& t
     std::cout << "\n[OK] Test Strong Scaling completato." << std::endl;
 }
 
+// Funzione per il test di weak scaling, nella quale si aumenta in modo proporzionale sia la dimensione del problema che il numero di thread
 void run_weak_scaling_test() {
     std::string base_dir = "../results/weak_scaling";
     if (!fs::exists(base_dir)) fs::create_directories(base_dir);
@@ -221,7 +224,6 @@ void run_weak_scaling_test() {
     std::string csv_path = base_dir + "/weak_scaling_results.csv";
     std::ofstream csv_file(csv_path);
     
-    // Header aggiornato
     csv_file << "Test,Scale,Threads,Operation,TimeSeq_Mean,TimeSeq_CI,TimePar_Mean,TimePar_CI,Speedup_Mean,Speedup_CI,Efficiency\n";
 
     std::vector<std::pair<int, std::string>> config = {
@@ -266,6 +268,7 @@ void run_weak_scaling_test() {
     std::cout << "\n[OK] Test Weak Scaling completato." << std::endl;
 }
 
+// Funzione per valutare le prestazioni dei kernel morfologici separabili 1D rispetto ai corrispondenti approcci standard 2D in parallelo
 void run_separable_test(const std::vector<std::string>& scales, const std::vector<int>& thread_configs, const std::vector<int>& kernel_sizes){    
     std::string base_dir = "../results/separable";
     if (!fs::exists(base_dir)) {
@@ -330,7 +333,7 @@ void run_separable_test(const std::vector<std::string>& scales, const std::vecto
     std::cout << "\n[OK] Test Separable Parallelism completato con successo." << std::endl;
 }
 
-
+// Funzione che misura l'impatto ottenuto introducendo la vettorizzazione SIMD rispetto alle sole direttive di parallelismo OpenMP
 void run_simd_impact_test(const std::vector<std::string>& scales, const std::vector<int>& thread_configs, const std::vector<int>& kernel_sizes) {
     std::string base_dir = "../results/simd_evaluation";
     if (!fs::exists(base_dir)) fs::create_directories(base_dir);
@@ -369,7 +372,7 @@ void run_simd_impact_test(const std::vector<std::string>& scales, const std::vec
     std::cout << "\n[OK] Test SIMD Impact completato con successo." << std::endl;
 }
 
-
+// Funzione che analizza la differenza di performance tra l'utilizzo della direttiva di scheduling statico e dinamico di OpenMP
 void run_scheduling_impact_test(const std::vector<std::string>& scales, const std::vector<int>& thread_configs, const std::vector<int>& kernel_sizes) {
     std::string base_dir = "../results/scheduling_evaluation";
     if (!fs::exists(base_dir)) fs::create_directories(base_dir);
@@ -410,6 +413,7 @@ void run_scheduling_impact_test(const std::vector<std::string>& scales, const st
     std::cout << "\n[OK] Test Scheduling Impact completato con successo." << std::endl;
 }
 
+// Funzione per il test di accesso alla memoria (ROW VS COLUMN)
 void run_memory_access_test(const std::vector<std::string>& scales, const std::vector<int>& thread_configs, const std::vector<int>& kernel_sizes) {
     std::string base_dir = "../results/memory_access_evaluation";
     if (!fs::exists(base_dir)) fs::create_directories(base_dir);
@@ -499,6 +503,7 @@ void run_memory_access_test(const std::vector<std::string>& scales, const std::v
     std::cout << "\n[OK] Test Memory Access completato con successo." << std::endl;
 }
 
+// Funzione per il test di pipeline multi-thread, che confronta l'approccio tradizionale con una versione che sfrutta una pipeline di elaborazione con più thread
 void run_pipeline_multithread_test(const std::vector<std::string>& scales, const std::vector<int>& thread_configs, const std::vector<int>& kernel_sizes) {    
     
     std::string base_dir = "../results/pipeline_multithread";

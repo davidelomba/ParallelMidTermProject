@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 
+// Funzione che esegue l'erosione morfologica sequenziale su un'immagine in scala di grigi utilizzando un kernel quadrato
 GrayImage erode_sequential(const GrayImage& input, int kernel_size) {
     int w = input.getWidth();
     int h = input.getHeight();
@@ -29,6 +30,7 @@ GrayImage erode_sequential(const GrayImage& input, int kernel_size) {
     return output;
 }
 
+// Funzione che esegue la dilatazione morfologica sequenziale su un'immagine in scala di grigi utilizzando un kernel quadrato
 GrayImage dilate_sequential(const GrayImage& input, int kernel_size) {
     int w = input.getWidth();
     int h = input.getHeight();
@@ -53,16 +55,19 @@ GrayImage dilate_sequential(const GrayImage& input, int kernel_size) {
     return output;
 }
 
+// Funzione che esegue l'operazione di opening morfologica sequenziale su un'immagine in scala di grigi utilizzando un kernel quadrato
 GrayImage opening_sequential(const GrayImage& input, int kernel_size) {
     GrayImage temp = erode_sequential(input, kernel_size);
     return dilate_sequential(temp, kernel_size);
 }
 
+// Funzione che esegue l'operazione di closing morfologica sequenziale su un'immagine in scala di grigi utilizzando un kernel quadrato
 GrayImage closing_sequential(const GrayImage& input, int kernel_size) {
     GrayImage temp = dilate_sequential(input, kernel_size);
     return erode_sequential(temp, kernel_size);
 }
 
+// Funzione che esegue l'erosione morfologica in parallelo su un'immagine in scala di grigi collassando i cicli spaziali e usando lo scheduling statico
 GrayImage erode_parallel(const GrayImage& input, int kernel_size) {
     int w = input.getWidth();
     int h = input.getHeight();
@@ -92,8 +97,7 @@ GrayImage erode_parallel(const GrayImage& input, int kernel_size) {
     return output;
 }
 
-
-
+// Funzione che esegue la dilatazione morfologica in parallelo su un'immagine in scala di grigi collassando i cicli spaziali e usando lo scheduling statico
 GrayImage dilate_parallel(const GrayImage& input, int kernel_size) {
     int w = input.getWidth();
     int h = input.getHeight();
@@ -123,16 +127,19 @@ GrayImage dilate_parallel(const GrayImage& input, int kernel_size) {
     return output;
 }
 
+// Funzione che esegue l'operazione di opening morfologica in parallelo su un'immagine in scala di grigi sfruttando le funzioni parallele di erosione e dilatazione
 GrayImage opening_parallel(const GrayImage& input, int kernel_size) {
     GrayImage temp = erode_parallel(input, kernel_size);
     return dilate_parallel(temp, kernel_size);
 }
 
+// Funzione che esegue l'operazione di closing morfologica in parallelo su un'immagine in scala di grigi sfruttando le funzioni parallele di erosione e dilatazione
 GrayImage closing_parallel(const GrayImage& input, int kernel_size) {
     GrayImage temp = dilate_parallel(input, kernel_size);
     return erode_parallel(temp, kernel_size);
 }
 
+// Funzione che ottimizza l'erosione parallela separando il filtro bidimensionale in due passaggi unidimensionali (orizzontale e poi verticale)
 GrayImage erode_separable_parallel(const GrayImage& input, int kernel_size) {
     int w = input.getWidth();
     int h = input.getHeight();
@@ -172,6 +179,7 @@ GrayImage erode_separable_parallel(const GrayImage& input, int kernel_size) {
     return output;
 }
 
+// Funzione che ottimizza la dilatazione parallela separando il filtro bidimensionale in due passaggi unidimensionali (orizzontale e poi verticale)
 GrayImage dilate_separable_parallel(const GrayImage& input, int kernel_size) {
     int w = input.getWidth();
     int h = input.getHeight();
@@ -210,17 +218,19 @@ GrayImage dilate_separable_parallel(const GrayImage& input, int kernel_size) {
     return output;
 }
 
+// Funzione che esegue l'operazione di opening morfologica in parallelo su un'immagine in scala di grigi sfruttando le funzioni parallele separabili di erosione e dilatazione
 GrayImage opening_separable_parallel(const GrayImage& input, int kernel_size) {
     GrayImage temp = erode_separable_parallel(input, kernel_size);
     return dilate_separable_parallel(temp, kernel_size);
 }
 
+// Funzione che esegue l'operazione di closing morfologica in parallelo su un'immagine in scala di grigi sfruttando le funzioni parallele separabili di erosione e dilatazione
 GrayImage closing_separable_parallel(const GrayImage& input, int kernel_size) {
     GrayImage temp = dilate_separable_parallel(input, kernel_size);
     return erode_separable_parallel(temp, kernel_size);
 }
 
-
+// Funzione ausiliaria che calcola localmente l'erosione morfologica per una singola riga specifica 'y' dell'immagine
 void compute_erosion_for_row(const GrayImage& input, GrayImage& output, int y, int kernel_size) {
     int width = input.getWidth();
     int height = input.getHeight();
@@ -245,6 +255,7 @@ void compute_erosion_for_row(const GrayImage& input, GrayImage& output, int y, i
     }
 }
 
+// Funzione ausiliaria che calcola localmente la dilatazione morfologica per una singola riga specifica 'y' dell'immagine
 void compute_dilation_for_row(const GrayImage& input, GrayImage& output, int y, int kernel_size) {
     int width = input.getWidth();
     int height = input.getHeight();
@@ -269,7 +280,7 @@ void compute_dilation_for_row(const GrayImage& input, GrayImage& output, int y, 
     }
 }
 
-
+// Funzione che esegue l'erosione parallela applicando anche la vettorizzazione SIMD sul ciclo di scansione orizzontale del kernel
 GrayImage erode_parallel_simd(const GrayImage& input, int kernel_size) {
     int w = input.getWidth();
     int h = input.getHeight();
@@ -297,6 +308,7 @@ GrayImage erode_parallel_simd(const GrayImage& input, int kernel_size) {
     return output;
 }
 
+// Funzione che esegue l'erosione parallela con scheduling dinamico, senza vettorizzazione SIMD
 GrayImage erode_parallel_dynamic(const GrayImage& input, int kernel_size) {
     int w = input.getWidth();
     int h = input.getHeight();
@@ -324,6 +336,7 @@ GrayImage erode_parallel_dynamic(const GrayImage& input, int kernel_size) {
     return output;
 }
 
+// Funzione che esegue l'erosione parallela applicando la scansione per colonne invece che per righe, per valutare l'impatto dell'accesso alla memoria
 GrayImage erode_parallel_column(const GrayImage& input, int kernel_size) {
     int w = input.getWidth();
     int h = input.getHeight();
@@ -351,6 +364,7 @@ GrayImage erode_parallel_column(const GrayImage& input, int kernel_size) {
     return output;
 }
 
+// Funzione che esegue la dilatazione parallela applicando la scansione per colonne invece che per righe, per valutare l'impatto dell'accesso alla memoria
 GrayImage dilate_parallel_column(const GrayImage& input, int kernel_size) {
     int w = input.getWidth();
     int h = input.getHeight();
@@ -379,16 +393,19 @@ GrayImage dilate_parallel_column(const GrayImage& input, int kernel_size) {
     return output;
 }
 
+// Funzione che esegue l'operazione di opening morfologica in parallelo su un'immagine in scala di grigi sfruttando le funzioni parallele di erosione e dilatazione con accesso per colonne
 GrayImage opening_parallel_column(const GrayImage& input, int kernel_size) {
     GrayImage temp = erode_parallel_column(input, kernel_size);
     return dilate_parallel_column(temp, kernel_size);
 }
 
+// Funzione che esegue l'operazione di closing morfologica in parallelo su un'immagine in scala di grigi sfruttando le funzioni parallele di erosione e dilatazione con accesso per colonne
 GrayImage closing_parallel_column(const GrayImage& input, int kernel_size) {
     GrayImage temp = dilate_parallel_column(input, kernel_size);
     return erode_parallel_column(temp, kernel_size);
 }
 
+// Funzione che implementa l'operazione di opening tramite un modello di pipeline concorrente dividendo i thread in producers (erosione) e consumers (dilatazione)
 GrayImage opening_pipeline_multithread(const GrayImage& input, int kernel_size) {
     int num_threads = omp_get_max_threads(); 
     
@@ -477,7 +494,7 @@ GrayImage opening_pipeline_multithread(const GrayImage& input, int kernel_size) 
     return output;
 }
 
-
+// Funzione che implementa l'operazione di closing tramite un modello di pipeline concorrente dividendo i thread in producers (dilatazione) e consumers (erosione)
 GrayImage closing_pipeline_multithread(const GrayImage& input, int kernel_size) {
     int num_threads = omp_get_max_threads(); 
     if (num_threads < 2) {
