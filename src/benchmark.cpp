@@ -6,7 +6,9 @@
 #include <vector>
 #include <thread>
 #include <omp.h>
+#include <cmath>
 #include "morphology.h"
+
 
 namespace fs = std::filesystem;
 
@@ -264,7 +266,7 @@ void run_weak_scaling_test() {
     std::cout << "\n[OK] Test Weak Scaling completato." << std::endl;
 }
 
-void run_separable_test(const std::vector<std::string>& scales, int threads, const std::vector<int>& kernel_sizes){    
+void run_separable_test(const std::vector<std::string>& scales, const std::vector<int>& thread_configs, const std::vector<int>& kernel_sizes){    
     std::string base_dir = "../results/separable";
     if (!fs::exists(base_dir)) {
         fs::create_directories(base_dir);
@@ -273,13 +275,11 @@ void run_separable_test(const std::vector<std::string>& scales, int threads, con
     std::string csv_path = base_dir + "/separable_results.csv";
     std::ofstream csv_file(csv_path);
     
-    // Header aggiornato
+    // Header
     csv_file << "Test,Scale,KernelSize,Threads,Operation,TimeStandard_Mean,TimeStandard_CI,TimeSeparable_Mean,TimeSeparable_CI,SeparableSpeedup_Mean,SeparableSpeedup_CI\n";
 
     std::cout << "=== SEPARABLE PARALLELISM TEST ===" << std::endl;
-    std::cout << "Thread: " << threads << " | CSV: " << csv_path << std::endl;
-
-    omp_set_num_threads(threads);
+    std::cout << "CSV: " << csv_path << std::endl;
 
     for (const auto& scale : scales) {
         std::string input_path = "../data/dataset_grayscale/" + scale;
@@ -290,34 +290,39 @@ void run_separable_test(const std::vector<std::string>& scales, int threads, con
             continue;
         }
 
-        for (int k : kernel_sizes) {
-            std::cout << "\n>>> Scale: " << scale << " | Kernel Size: " << k << "x" << k << " <<<" << std::endl;
+        for (int t : thread_configs) {
+            std::cout << "\n>>> Configurazione: " << t << " Threads <<<" << std::endl;
+            omp_set_num_threads(t);
 
-            // --- TEST 1: EROSIONE ---
-            std::this_thread::sleep_for(std::chrono::seconds(3));
-            auto r_ero = run_morphology_benchmark(input_path, output_base + "/eroded", "Erosione", k, erode_parallel, erode_separable_parallel);
-            csv_file << "Separable Evaluation," << scale << "," << k << "," << threads << ",Erosione," 
-                     << r_ero.mean_t1 << "," << r_ero.ci_t1 << "," << r_ero.mean_t2 << "," << r_ero.ci_t2 << "," << r_ero.avg_speedup << "," << r_ero.ci_speedup << "\n";
-            
-            // --- TEST 2: DILATAZIONE ---
-            std::this_thread::sleep_for(std::chrono::seconds(2));
-            auto r_dil = run_morphology_benchmark(input_path, output_base + "/dilated", "Dilatazione", k, dilate_parallel, dilate_separable_parallel);
-            csv_file << "Separable Evaluation," << scale << "," << k << "," << threads << ",Dilatazione," 
-                     << r_dil.mean_t1 << "," << r_dil.ci_t1 << "," << r_dil.mean_t2 << "," << r_dil.ci_t2 << "," << r_dil.avg_speedup << "," << r_dil.ci_speedup << "\n";
+            for (int k : kernel_sizes) {
+                std::cout << "\n>>> Scale: " << scale << " | Threads: " << t << " | Kernel Size: " << k << "x" << k << " <<<" << std::endl;
 
-            // --- TEST 3: OPENING ---
-            std::this_thread::sleep_for(std::chrono::seconds(2));
-            auto r_ope = run_morphology_benchmark(input_path, output_base + "/opening", "Opening", k, opening_parallel, opening_separable_parallel);
-            csv_file << "Separable Evaluation," << scale << "," << k << "," << threads << ",Opening," 
-                     << r_ope.mean_t1 << "," << r_ope.ci_t1 << "," << r_ope.mean_t2 << "," << r_ope.ci_t2 << "," << r_ope.avg_speedup << "," << r_ope.ci_speedup << "\n";
+                // --- TEST 1: EROSIONE ---
+                std::this_thread::sleep_for(std::chrono::seconds(3));
+                auto r_ero = run_morphology_benchmark(input_path, output_base + "/eroded", "Erosione", k, erode_parallel, erode_separable_parallel);
+                csv_file << "Separable Evaluation," << scale << "," << k << "," << t << ",Erosione," 
+                         << r_ero.mean_t1 << "," << r_ero.ci_t1 << "," << r_ero.mean_t2 << "," << r_ero.ci_t2 << "," << r_ero.avg_speedup << "," << r_ero.ci_speedup << "\n";
+                
+                // --- TEST 2: DILATAZIONE ---
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                auto r_dil = run_morphology_benchmark(input_path, output_base + "/dilated", "Dilatazione", k, dilate_parallel, dilate_separable_parallel);
+                csv_file << "Separable Evaluation," << scale << "," << k << "," << t << ",Dilatazione," 
+                         << r_dil.mean_t1 << "," << r_dil.ci_t1 << "," << r_dil.mean_t2 << "," << r_dil.ci_t2 << "," << r_dil.avg_speedup << "," << r_dil.ci_speedup << "\n";
 
-            // --- TEST 4: CLOSING ---
-            std::this_thread::sleep_for(std::chrono::seconds(2));
-            auto r_clo = run_morphology_benchmark(input_path, output_base + "/closing", "Closing", k, closing_parallel, closing_separable_parallel);
-            csv_file << "Separable Evaluation," << scale << "," << k << "," << threads << ",Closing," 
-                     << r_clo.mean_t1 << "," << r_clo.ci_t1 << "," << r_clo.mean_t2 << "," << r_clo.ci_t2 << "," << r_clo.avg_speedup << "," << r_clo.ci_speedup << "\n";
-            
-            csv_file.flush();
+                // --- TEST 3: OPENING ---
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                auto r_ope = run_morphology_benchmark(input_path, output_base + "/opening", "Opening", k, opening_parallel, opening_separable_parallel);
+                csv_file << "Separable Evaluation," << scale << "," << k << "," << t << ",Opening," 
+                         << r_ope.mean_t1 << "," << r_ope.ci_t1 << "," << r_ope.mean_t2 << "," << r_ope.ci_t2 << "," << r_ope.avg_speedup << "," << r_ope.ci_speedup << "\n";
+
+                // --- TEST 4: CLOSING ---
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                auto r_clo = run_morphology_benchmark(input_path, output_base + "/closing", "Closing", k, closing_parallel, closing_separable_parallel);
+                csv_file << "Separable Evaluation," << scale << "," << k << "," << t << ",Closing," 
+                         << r_clo.mean_t1 << "," << r_clo.ci_t1 << "," << r_clo.mean_t2 << "," << r_clo.ci_t2 << "," << r_clo.avg_speedup << "," << r_clo.ci_speedup << "\n";
+                
+                csv_file.flush();
+            }
         }
     }
 
@@ -325,22 +330,17 @@ void run_separable_test(const std::vector<std::string>& scales, int threads, con
     std::cout << "\n[OK] Test Separable Parallelism completato con successo." << std::endl;
 }
 
-void run_pipeline_test(const std::vector<std::string>& scales, const std::vector<int>& kernel_sizes) {    
-    std::string base_dir = "../results/pipeline";
-    if (!fs::exists(base_dir)) {
-        fs::create_directories(base_dir);
-    }
 
-    std::string csv_path = base_dir + "/pipeline_results.csv";
+void run_simd_impact_test(const std::vector<std::string>& scales, const std::vector<int>& thread_configs, const std::vector<int>& kernel_sizes) {
+    std::string base_dir = "../results/simd_evaluation";
+    if (!fs::exists(base_dir)) fs::create_directories(base_dir);
+
+    std::string csv_path = base_dir + "/simd_impact_results.csv";
     std::ofstream csv_file(csv_path);
-    
-    // Header aggiornato
-    csv_file << "Test,Scale,KernelSize,Threads,Operation,TimeStandard_Mean,TimeStandard_CI,TimePipeline_Mean,TimePipeline_CI,PipelineSpeedup_Mean,PipelineSpeedup_CI\n";
+    csv_file << "Scale,KernelSize,Threads,TimeNoSIMD_Mean,TimeNoSIMD_CI,TimeSIMD_Mean,TimeSIMD_CI,SIMDSpeedup_Mean,SIMDSpeedup_CI\n";
 
-    std::cout << "=== PIPELINE PARALLELISM TEST ===" << std::endl;
+    std::cout << "=== SIMD IMPACT TEST ===" << std::endl;
     std::cout << "CSV: " << csv_path << std::endl;
-
-    omp_set_num_threads(2);
 
     for (const auto& scale : scales) {
         std::string input_path = "../data/dataset_grayscale/" + scale;
@@ -351,25 +351,217 @@ void run_pipeline_test(const std::vector<std::string>& scales, const std::vector
             continue;
         }
 
-        for (int k : kernel_sizes) {
-            std::cout << "\n>>> Scale: " << scale << " | Kernel Size: " << k << "x" << k << " <<<" << std::endl;
+        for (int t : thread_configs) {
+            omp_set_num_threads(t);
+            for (int k : kernel_sizes) {
+                std::cout << "\n>>> SIMD Test | Scale: " << scale << " | Threads: " << t << " | Kernel: " << k << "x" << k << " <<<" << std::endl;
+                auto r = run_morphology_benchmark(input_path, output_base + "/eroded", "Impatto SIMD Kernel " + std::to_string(k) + " (" + std::to_string(t) + " Thread)", k, erode_parallel, erode_parallel_simd);
+                
+                csv_file << scale << "," << k << "," << t << ","
+                         << r.mean_t1 << "," << r.ci_t1 << "," 
+                         << r.mean_t2 << "," << r.ci_t2 << "," 
+                         << r.avg_speedup << "," << r.ci_speedup << "\n";
+                csv_file.flush();
+            }
+        }
+    }
+    csv_file.close();
+    std::cout << "\n[OK] Test SIMD Impact completato con successo." << std::endl;
+}
 
-            // --- TEST 1: OPENING ---
-            std::this_thread::sleep_for(std::chrono::seconds(2));
-            auto r_ope = run_morphology_benchmark(input_path, output_base + "/opening", "Opening", k, opening_parallel, opening_pipeline);
-            csv_file << "Pipeline Evaluation," << scale << "," << k << ",2,Opening," 
-                     << r_ope.mean_t1 << "," << r_ope.ci_t1 << "," << r_ope.mean_t2 << "," << r_ope.ci_t2 << "," << r_ope.avg_speedup << "," << r_ope.ci_speedup << "\n";
 
-            // --- TEST 2: CLOSING ---
-            std::this_thread::sleep_for(std::chrono::seconds(2));
-            auto r_clo = run_morphology_benchmark(input_path, output_base + "/closing", "Closing", k, closing_parallel, closing_pipeline);
-            csv_file << "Pipeline Evaluation," << scale << "," << k << ",2,Closing," 
-                     << r_clo.mean_t1 << "," << r_clo.ci_t1 << "," << r_clo.mean_t2 << "," << r_clo.ci_t2 << "," << r_clo.avg_speedup << "," << r_clo.ci_speedup << "\n";
+void run_scheduling_impact_test(const std::vector<std::string>& scales, const std::vector<int>& thread_configs, const std::vector<int>& kernel_sizes) {
+    std::string base_dir = "../results/scheduling_evaluation";
+    if (!fs::exists(base_dir)) fs::create_directories(base_dir);
+
+    std::string csv_path = base_dir + "/scheduling_impact_results.csv";
+    std::ofstream csv_file(csv_path);
+    csv_file << "Scale,KernelSize,Threads,TimeStatic_Mean,TimeStatic_CI,TimeDynamic_Mean,TimeDynamic_CI,DynamicVsStatic_Ratio\n";
+
+    std::cout << "=== SCHEDULING IMPACT TEST ===" << std::endl;
+    std::cout << "CSV: " << csv_path << std::endl;
+
+    for (const auto& scale : scales) {
+        std::string input_path = "../data/dataset_grayscale/" + scale;
+        std::string output_base = "../data/output/" + scale;
+
+        if (!fs::exists(input_path)) {
+            std::cerr << "[AVVISO] Cartella non trovata " << input_path << std::endl;
+            continue;
+        }
+
+        for (int t : thread_configs) {
+            omp_set_num_threads(t);
+            for (int k : kernel_sizes) {
+                std::cout << "\n>>> Scheduling Test | Scale: " << scale << " | Threads: " << t << " | Kernel: " << k << "x" << k << " <<<" << std::endl;
+                auto r = run_morphology_benchmark(input_path, output_base + "/eroded", 
+                                                  "Scheduling (Static vs Dynamic) Kernel " + std::to_string(k) + " (" + std::to_string(t) + " Thread)", 
+                                                  k, erode_parallel, erode_parallel_dynamic);
+                
+                csv_file << scale << "," << k << "," << t << ","
+                         << r.mean_t1 << "," << r.ci_t1 << "," 
+                         << r.mean_t2 << "," << r.ci_t2 << "," 
+                         << r.avg_speedup << "\n";
+                csv_file.flush();
+            }
+        }
+    } 
+    csv_file.close();
+    std::cout << "\n[OK] Test Scheduling Impact completato con successo." << std::endl;
+}
+
+void run_memory_access_test(const std::vector<std::string>& scales, const std::vector<int>& thread_configs, const std::vector<int>& kernel_sizes) {
+    std::string base_dir = "../results/memory_access_evaluation";
+    if (!fs::exists(base_dir)) fs::create_directories(base_dir);
+
+    std::string csv_path = base_dir + "/memory_access_results.csv";
+    std::ofstream csv_file(csv_path);
+    csv_file << "Scale,KernelSize,Threads,Operation,TimeRowMajor_Mean,TimeRowMajor_CI,TimeColumnMajor_Mean,TimeColumnMajor_CI,SpeedupRowVsCol_Mean,SpeedupRowVsCol_CI\n";
+
+    std::cout << "=== MEMORY ACCESS TEST (ROW VS COLUMN) ===" << std::endl;
+    std::cout << "CSV: " << csv_path << std::endl;
+
+    for (const auto& scale : scales) {
+        std::string input_path = "../data/dataset_grayscale/" + scale;
+        std::string output_base = "../data/output/" + scale;
+
+        if (!fs::exists(input_path)) {
+            std::cerr << "[AVVISO] Cartella non trovata " << input_path << std::endl;
+            continue;
+        }
+
+        for (int t : thread_configs) {
+            omp_set_num_threads(t);
+            for (int k : kernel_sizes) {
+                std::cout << "\n>>> Memory Test | Scale: " << scale << " | Threads: " << t << " | Kernel: " << k << "x" << k << " <<<" << std::endl;
+                
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                auto r_ero = run_morphology_benchmark(
+                    input_path, output_base + "/eroded", 
+                    "Erosione Memory Access", 
+                    k, 
+                    erode_parallel,          
+                    erode_parallel_column
+                );
+                
+                csv_file << scale << "," << k << "," << t << ",Erosione,"
+                         << r_ero.mean_t1 << "," << r_ero.ci_t1 << "," 
+                         << r_ero.mean_t2 << "," << r_ero.ci_t2 << "," 
+                         << r_ero.avg_speedup << "," << r_ero.ci_speedup << "\n";
+
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                auto r_dil = run_morphology_benchmark(
+                    input_path, output_base + "/dilated", 
+                    "Dilatazione Memory Access", 
+                    k, 
+                    dilate_parallel,          
+                    dilate_parallel_column   
+                );
+                
+                csv_file << scale << "," << k << "," << t << ",Dilatazione,"
+                         << r_dil.mean_t1 << "," << r_dil.ci_t1 << "," 
+                         << r_dil.mean_t2 << "," << r_dil.ci_t2 << "," 
+                         << r_dil.avg_speedup << "," << r_dil.ci_speedup << "\n";
+
+                
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                auto r_ope = run_morphology_benchmark(
+                    input_path, output_base + "/opening", 
+                    "Opening Memory Access", 
+                    k, 
+                    opening_parallel,          
+                    opening_parallel_column   
+                );
+
+                csv_file << scale << "," << k << "," << t << ",Opening,"
+                         << r_ope.mean_t1 << "," << r_ope.ci_t1 << "," 
+                         << r_ope.mean_t2 << "," << r_ope.ci_t2 << "," 
+                         << r_ope.avg_speedup << "," << r_ope.ci_speedup << "\n";
+
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                auto r_clo = run_morphology_benchmark(
+                    input_path, output_base + "/closing", 
+                    "Closing Memory Access", 
+                    k, 
+                    closing_parallel,          
+                    closing_parallel_column   
+                );
+                csv_file << scale << "," << k << "," << t << ",Closing,"
+                         << r_clo.mean_t1 << "," << r_clo.ci_t1 << "," 
+                         << r_clo.mean_t2 << "," << r_clo.ci_t2 << "," 
+                         << r_clo.avg_speedup << "," << r_clo.ci_speedup << "\n";
+
+                csv_file.flush();
+            }
+        }
+    } 
+    csv_file.close();
+    std::cout << "\n[OK] Test Memory Access completato con successo." << std::endl;
+}
+
+void run_pipeline_multithread_test(const std::vector<std::string>& scales, const std::vector<int>& thread_configs, const std::vector<int>& kernel_sizes) {    
+    
+    std::string base_dir = "../results/pipeline_multithread";
+    if (!fs::exists(base_dir)) {
+        fs::create_directories(base_dir);
+    }
+
+    std::string csv_path = base_dir + "/pipeline_multithread_results.csv";
+    std::ofstream csv_file(csv_path);
+    
+    if (!csv_file.is_open()) {
+        std::cerr << "[ERRORE] Impossibile creare il file CSV in: " << csv_path << std::endl;
+        return;
+    }
+    
+    csv_file << "Test,Scale,KernelSize,Threads,Operation,TimeStandard_Mean,TimeStandard_CI,TimePipelineMulti_Mean,TimePipelineMulti_CI,Speedup_Mean,Speedup_CI\n";
+
+    std::cout << "=== PIPELINE MULTI-THREAD PARALLELISM TEST ===" << std::endl;
+    std::cout << "CSV: " << csv_path << std::endl;
+
+    for (const auto& scale : scales) {
+        std::string input_path = "../data/dataset_grayscale/" + scale;
+        std::string output_base = "../data/output/" + scale;
+
+        if (!fs::exists(input_path)) {
+            std::cerr << "[AVVISO] Cartella non trovata " << input_path << std::endl;
+            continue;
+        }
+
+        for (int t : thread_configs) {
+            std::cout << "\n>>> Configurazione: " << t << " Threads <<<" << std::endl;
             
-            csv_file.flush();
+            omp_set_num_threads(t);
+
+            for (int k : kernel_sizes) {
+                std::cout << "\n>>> Scale: " << scale << " | Threads: " << t << " | Kernel Size: " << k << "x" << k << " <<<" << std::endl;
+
+                
+                std::this_thread::sleep_for(std::chrono::seconds(2)); 
+                
+                auto r_ope = run_morphology_benchmark(input_path, output_base + "/opening", "Opening Multi-T", k, 
+                                                      opening_parallel, 
+                                                      opening_pipeline_multithread
+                                                     );
+                
+                csv_file << "Pipeline Multi-Thread," << scale << "," << k << "," << t << ",Opening," 
+                         << r_ope.mean_t1 << "," << r_ope.ci_t1 << "," << r_ope.mean_t2 << "," << r_ope.ci_t2 << "," << r_ope.avg_speedup << "," << r_ope.ci_speedup << "\n";
+
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                
+                auto r_clo = run_morphology_benchmark(input_path, output_base + "/closing", "Closing Multi-T", k, 
+                                                      closing_parallel, 
+                                                      closing_pipeline_multithread
+                                                     );
+                
+                csv_file << "Pipeline Multi-Thread," << scale << "," << k << "," << t << ",Closing," 
+                         << r_clo.mean_t1 << "," << r_clo.ci_t1 << "," << r_clo.mean_t2 << "," << r_clo.ci_t2 << "," << r_clo.avg_speedup << "," << r_clo.ci_speedup << "\n";
+                
+                csv_file.flush(); 
+            }
         }
     }
 
     csv_file.close();
-    std::cout << "\n[OK] Test Pipeline Parallelism completato con successo." << std::endl;
+    std::cout << "\n[OK] Test Pipeline Multi-Thread completato con successo." << std::endl;
 }

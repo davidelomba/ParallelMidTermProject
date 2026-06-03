@@ -28,6 +28,12 @@ void run_strong_scaling_test(const std::string& scale, const std::vector<int>& t
 
 void run_weak_scaling_test();
 
-void run_separable_test(const std::vector<std::string>& scales, int threads, const std::vector<int>& kernel_sizes);
+void run_separable_test(const std::vector<std::string>& scales, const std::vector<int>& thread_configs, const std::vector<int>& kernel_sizes);
 
-void run_pipeline_test(const std::vector<std::string>& scales, const std::vector<int>& kernel_sizes);
+void run_simd_impact_test(const std::vector<std::string>& scales, const std::vector<int>& thread_configs, const std::vector<int>& kernel_sizes);
+
+void run_scheduling_impact_test(const std::vector<std::string>& scales, const std::vector<int>& thread_configs, const std::vector<int>& kernel_sizes);
+
+void run_memory_access_test(const std::vector<std::string>& scales, const std::vector<int>& thread_configs, const std::vector<int>& kernel_sizes);
+
+void run_pipeline_multithread_test(const std::vector<std::string>& scales, const std::vector<int>& thread_configs, const std::vector<int>& kernel_sizes);

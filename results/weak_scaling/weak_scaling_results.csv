@@ -1,13 +1,13 @@
-Test,Scale,Threads,Operation,TimeSeq,TimePar,Speedup,Efficiency
-Weak Scaling,scale_1.0x,1,Erosione,5.27806,5.05303,1.04453,1.04453
-Weak Scaling,scale_1.0x,1,Dilatazione,5.32039,5.15419,1.03225,1.03225
-Weak Scaling,scale_1.0x,1,Opening,10.1821,9.9726,1.02101,1.02101
-Weak Scaling,scale_1.0x,1,Closing,10.0846,9.85224,1.02358,1.02358
-Weak Scaling,scale_2.0x,4,Erosione,19.7614,6.35337,3.11038,0.777594
-Weak Scaling,scale_2.0x,4,Dilatazione,19.8004,6.38004,3.1035,0.775874
-Weak Scaling,scale_2.0x,4,Opening,39.4719,12.0999,3.26216,0.81554
-Weak Scaling,scale_2.0x,4,Closing,39.6172,12.1521,3.2601,0.815026
-Weak Scaling,scale_4.0x,16,Erosione,75.1402,18.4726,4.06767,0.254229
-Weak Scaling,scale_4.0x,16,Dilatazione,75.779,18.8058,4.02955,0.251847
-Weak Scaling,scale_4.0x,16,Opening,150.121,38.7014,3.87895,0.242434
-Weak Scaling,scale_4.0x,16,Closing,150.373,38.8382,3.87178,0.241986
+Test,Scale,Threads,Operation,TimeSeq_Mean,TimeSeq_CI,TimePar_Mean,TimePar_CI,Speedup_Mean,Speedup_CI,Efficiency
+Weak Scaling,scale_1.0x,1,Erosione,0.973004,0.0270972,1.06943,0.0454959,0.910211,0.0223342,0.910211
+Weak Scaling,scale_1.0x,1,Dilatazione,1.23742,0.0671933,1.01342,0.0177369,1.2211,0.0639799,1.2211
+Weak Scaling,scale_1.0x,1,Opening,2.10915,0.122289,2.03888,0.112943,1.03721,0.106465,1.03721
+Weak Scaling,scale_1.0x,1,Closing,2.0879,0.103026,2.10854,0.204452,0.996448,0.130173,0.996448
+Weak Scaling,scale_2.0x,4,Erosione,3.58531,0.0153593,1.46405,0.0206051,2.4491,0.0286988,0.612275
+Weak Scaling,scale_2.0x,4,Dilatazione,4.43016,0.054542,1.20316,0.0235055,3.68269,0.0710175,0.920673
+Weak Scaling,scale_2.0x,4,Opening,7.97503,0.0941133,2.67046,0.0628144,2.98719,0.0748023,0.746798
+Weak Scaling,scale_2.0x,4,Closing,8.2013,0.213147,3.1358,0.213338,2.62286,0.218944,0.655716
+Weak Scaling,scale_4.0x,16,Erosione,14.433,0.163152,4.56571,0.0468854,3.16126,0.0360534,0.197579
+Weak Scaling,scale_4.0x,16,Dilatazione,18.0608,0.112534,4.29321,0.104491,4.20806,0.10079,0.263004
+Weak Scaling,scale_4.0x,16,Opening,32.4371,0.151488,8.70151,0.0346337,3.72776,0.0145843,0.232985
+Weak Scaling,scale_4.0x,16,Closing,32.8798,0.36683,8.86729,0.106878,3.70842,0.0772797,0.231776

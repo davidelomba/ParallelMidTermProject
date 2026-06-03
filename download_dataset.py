@@ -35,5 +35,5 @@ def setup_bsds(num_images):
     print(f"Download completato! {count} immagini master copiate in '{master_source_dir}'.")
 
 if __name__ == "__main__":
-    NUM_IMAGES = 50
+    NUM_IMAGES = 200
     setup_bsds(num_images=NUM_IMAGES)
