@@ -10,6 +10,8 @@ out/
 results/**/*
 !results/.gitkeep
 
+graphs/*
+!graphs/.gitkeep
 
 data/**/*
 !data/.gitkeep

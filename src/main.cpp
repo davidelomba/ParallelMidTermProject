@@ -6,7 +6,7 @@ int main(int argc, char* argv[]) {
     //Strong scaling test
     std::string strong_scale = "scale_4.0x";
     std::vector<int> strong_scaling_threads = {1, 2, 4, 8, 16, 32};
-    //run_strong_scaling_test(strong_scale, strong_scaling_threads);
+    run_strong_scaling_test(strong_scale, strong_scaling_threads);
 
     //Weak scaling test
     //run_weak_scaling_test();
