@@ -26,3 +26,9 @@ GrayImage closing_parallel_column(const GrayImage& input, int kernel_size);
 
 GrayImage opening_pipeline_multithread(const GrayImage& input, int kernel_size);
 GrayImage closing_pipeline_multithread(const GrayImage& input, int kernel_size);
+
+GrayImage erode_separable_parallel_optimal(const GrayImage& input, int kernel_size);
+GrayImage dilate_separable_parallel_optimal(const GrayImage& input, int kernel_size);
+GrayImage opening_separable_parallel_optimal(const GrayImage& input, int kernel_size);
+GrayImage closing_separable_parallel_optimal(const GrayImage& input, int kernel_size);
+

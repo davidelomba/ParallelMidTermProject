@@ -37,3 +37,5 @@ void run_scheduling_impact_test(const std::vector<std::string>& scales, const st
 void run_memory_access_test(const std::vector<std::string>& scales, const std::vector<int>& thread_configs, const std::vector<int>& kernel_sizes);
 
 void run_pipeline_multithread_test(const std::vector<std::string>& scales, const std::vector<int>& thread_configs, const std::vector<int>& kernel_sizes);
+
+void run_optimal_vs_sequential_test(const std::vector<std::string>& scales, const std::vector<int>& thread_configs, const std::vector<int>& kernel_sizes);

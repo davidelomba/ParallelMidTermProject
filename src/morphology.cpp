@@ -566,3 +566,98 @@ GrayImage closing_pipeline_multithread(const GrayImage& input, int kernel_size) 
     }
     return output;
 }
+
+
+
+
+// Funzione che ottimizza l'erosione parallela separando il filtro 2D in due passaggi 1D (orizzontale e verticale)
+// Configurazione Ottima: Sfrutta il ciclo Row-Major, Collapse(2) e lo Scheduling Dinamico senza pragma SIMD manuali.
+GrayImage erode_separable_parallel_optimal(const GrayImage& input, int kernel_size) {
+    int w = input.getWidth();
+    int h = input.getHeight();
+    int offset = kernel_size / 2;
+    
+    GrayImage temp(w, h);
+    GrayImage output(w, h);
+
+    // Passaggio 1: Orizzontale
+    #pragma omp parallel for collapse(2) schedule(dynamic)
+    for (int y = 0; y < h; ++y) {
+        for (int x = 0; x < w; ++x) {
+            unsigned char min_val = 255;
+
+            for (int kx = -offset; kx <= offset; ++kx) {
+                int nx = std::max(0, std::min(w - 1, x + kx));
+                min_val = std::min(min_val, input.getPixel(nx, y));
+            }
+            temp.setPixel(x, y, min_val);
+        }
+    }
+
+    // Passaggio 2: Verticale
+    #pragma omp parallel for collapse(2) schedule(dynamic)
+    for (int y = 0; y < h; ++y) {
+        for (int x = 0; x < w; ++x) {
+            unsigned char min_val = 255;
+            
+            for (int ky = -offset; ky <= offset; ++ky) {
+                int ny = std::max(0, std::min(h - 1, y + ky));
+                min_val = std::min(min_val, temp.getPixel(x, ny));
+            }
+            output.setPixel(x, y, min_val);
+        }
+    }
+
+    return output;
+}
+
+// Funzione che ottimizza la dilatazione parallela separando il filtro 2D in due passaggi 1D (orizzontale e verticale)
+// Configurazione Ottima: Sfrutta il ciclo Row-Major, Collapse(2) e lo Scheduling Dinamico senza pragma SIMD manuali.
+GrayImage dilate_separable_parallel_optimal(const GrayImage& input, int kernel_size) {
+    int w = input.getWidth();
+    int h = input.getHeight();
+    int offset = kernel_size / 2;
+    
+    GrayImage temp(w, h);
+    GrayImage output(w, h);
+
+    // Passaggio 1: Orizzontale
+    #pragma omp parallel for collapse(2) schedule(dynamic)
+    for (int y = 0; y < h; ++y) {
+        for (int x = 0; x < w; ++x) {
+            unsigned char max_val = 0;
+            
+            for (int kx = -offset; kx <= offset; ++kx) {
+                int nx = std::max(0, std::min(w - 1, x + kx));
+                max_val = std::max(max_val, input.getPixel(nx, y));
+            }
+            temp.setPixel(x, y, max_val);
+        }
+    }
+
+    // Passaggio 2: Verticale
+    #pragma omp parallel for collapse(2) schedule(dynamic)
+    for (int y = 0; y < h; ++y) {
+        for (int x = 0; x < w; ++x) {
+            unsigned char max_val = 0;
+            
+            for (int ky = -offset; ky <= offset; ++ky) {
+                int ny = std::max(0, std::min(h - 1, y + ky));
+                max_val = std::max(max_val, temp.getPixel(x, ny));
+            }
+            output.setPixel(x, y, max_val);
+        }
+    }
+
+    return output;
+}
+
+GrayImage opening_separable_parallel_optimal(const GrayImage& input, int kernel_size) {
+    GrayImage temp = erode_separable_parallel_optimal(input, kernel_size);
+    return dilate_separable_parallel_optimal(temp, kernel_size);
+}
+
+GrayImage closing_separable_parallel_optimal(const GrayImage& input, int kernel_size) {
+    GrayImage temp = dilate_separable_parallel_optimal(input, kernel_size);
+    return erode_separable_parallel_optimal(temp, kernel_size);
+}

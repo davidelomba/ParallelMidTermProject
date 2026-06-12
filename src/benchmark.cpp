@@ -570,3 +570,69 @@ void run_pipeline_multithread_test(const std::vector<std::string>& scales, const
     csv_file.close();
     std::cout << "\n[OK] Test Pipeline Multi-Thread completato con successo." << std::endl;
 }
+
+// Funzione che confronta direttamente l'algoritmo sequenziale standard (baseline) con la versione separabile parallela ottimale (Dynamic Scheduling, Collapse, no SIMD)
+void run_optimal_vs_sequential_test(const std::vector<std::string>& scales, const std::vector<int>& thread_configs, const std::vector<int>& kernel_sizes) {    
+    std::string base_dir = "../results/optimal_evaluation";
+    if (!fs::exists(base_dir)) {
+        fs::create_directories(base_dir);
+    }
+
+    std::string csv_path = base_dir + "/optimal_vs_sequential_results.csv";
+    std::ofstream csv_file(csv_path);
+    
+    if (!csv_file.is_open()) {
+        std::cerr << "[ERRORE] Impossibile creare il file CSV in: " << csv_path << std::endl;
+        return;
+    }
+    
+    csv_file << "Test,Scale,KernelSize,Threads,Operation,TimeSequential_Mean,TimeSequential_CI,TimeOptimal_Mean,TimeOptimal_CI,OptimalSpeedup_Mean,OptimalSpeedup_CI\n";
+
+    std::cout << "=== OPTIMAL VS SEQUENTIAL BENCHMARK ===" << std::endl;
+    std::cout << "CSV: " << csv_path << std::endl;
+
+    for (const auto& scale : scales) {
+        std::string input_path = "../data/dataset_grayscale/" + scale;
+        std::string output_base = "../data/output/" + scale;
+
+        if (!fs::exists(input_path)) {
+            std::cerr << "[AVVISO] Cartella non trovata " << input_path << std::endl;
+            continue;
+        }
+
+        for (int t : thread_configs) {
+            std::cout << "\n>>> Configurazione: " << t << " Threads <<<" << std::endl;
+            omp_set_num_threads(t);
+
+            for (int k : kernel_sizes) {
+                std::cout << "\n>>> Scale: " << scale << " | Threads: " << t << " | Kernel Size: " << k << "x" << k << " <<<" << std::endl;
+
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                auto r_ero = run_morphology_benchmark(input_path, output_base + "/eroded_optimal", "Erosione Ottimale", k, erode_sequential, erode_separable_parallel_optimal);
+                csv_file << "Optimal Evaluation," << scale << "," << k << "," << t << ",Erosione," 
+                         << r_ero.mean_t1 << "," << r_ero.ci_t1 << "," << r_ero.mean_t2 << "," << r_ero.ci_t2 << "," << r_ero.avg_speedup << "," << r_ero.ci_speedup << "\n";
+                /*
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                auto r_dil = run_morphology_benchmark(input_path, output_base + "/dilated_optimal", "Dilatazione Ottimale", k, dilate_sequential, dilate_separable_parallel_optimal);
+                csv_file << "Optimal Evaluation," << scale << "," << k << "," << t << ",Dilatazione," 
+                         << r_dil.mean_t1 << "," << r_dil.ci_t1 << "," << r_dil.mean_t2 << "," << r_dil.ci_t2 << "," << r_dil.avg_speedup << "," << r_dil.ci_speedup << "\n";
+
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                auto r_ope = run_morphology_benchmark(input_path, output_base + "/opening_optimal", "Opening Ottimale", k, opening_sequential, opening_separable_parallel_optimal);
+                csv_file << "Optimal Evaluation," << scale << "," << k << "," << t << ",Opening," 
+                         << r_ope.mean_t1 << "," << r_ope.ci_t1 << "," << r_ope.mean_t2 << "," << r_ope.ci_t2 << "," << r_ope.avg_speedup << "," << r_ope.ci_speedup << "\n";
+
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                auto r_clo = run_morphology_benchmark(input_path, output_base + "/closing_optimal", "Closing Ottimale", k, closing_sequential, closing_separable_parallel_optimal);
+                csv_file << "Optimal Evaluation," << scale << "," << k << "," << t << ",Closing," 
+                         << r_clo.mean_t1 << "," << r_clo.ci_t1 << "," << r_clo.mean_t2 << "," << r_clo.ci_t2 << "," << r_clo.avg_speedup << "," << r_clo.ci_speedup << "\n";
+                */
+                // Forza il salvataggio su disco alla fine di ogni combinazione di kernel/scala
+                csv_file.flush();
+            }
+        }
+    }
+
+    csv_file.close();
+    std::cout << "\n[OK] Test Optimal vs Sequential completato con successo." << std::endl;
+}
