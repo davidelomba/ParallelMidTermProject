@@ -11,6 +11,7 @@ struct BenchResult {
     double ci_speedup;
 };
 
+// Definizione dell'alias di tipo per le funzioni morfologiche
 using MorphoFunc = std::function<GrayImage(const GrayImage&, int)>;
 
 BenchResult run_morphology_benchmark(

@@ -571,7 +571,7 @@ void run_pipeline_multithread_test(const std::vector<std::string>& scales, const
     std::cout << "\n[OK] Test Pipeline Multi-Thread completato con successo." << std::endl;
 }
 
-// Funzione che confronta direttamente l'algoritmo sequenziale standard (baseline) con la versione separabile parallela ottimale (Dynamic Scheduling, Collapse, no SIMD)
+// Funzione che confronta direttamente l'algoritmo sequenziale standard con la versione separabile parallela ottimale (Dynamic Scheduling, Collapse, no SIMD)
 void run_optimal_vs_sequential_test(const std::vector<std::string>& scales, const std::vector<int>& thread_configs, const std::vector<int>& kernel_sizes) {    
     std::string base_dir = "../results/optimal_evaluation";
     if (!fs::exists(base_dir)) {
@@ -627,7 +627,6 @@ void run_optimal_vs_sequential_test(const std::vector<std::string>& scales, cons
                 csv_file << "Optimal Evaluation," << scale << "," << k << "," << t << ",Closing," 
                          << r_clo.mean_t1 << "," << r_clo.ci_t1 << "," << r_clo.mean_t2 << "," << r_clo.ci_t2 << "," << r_clo.avg_speedup << "," << r_clo.ci_speedup << "\n";
                 */
-                // Forza il salvataggio su disco alla fine di ogni combinazione di kernel/scala
                 csv_file.flush();
             }
         }
