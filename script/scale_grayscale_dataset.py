@@ -1,9 +1,10 @@
 import os
 from PIL import Image
 
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
 def scale_grayscale(factors):
-    # Definizione del percorso di origine (le immagini in scala di grigi in scale_1.0x)
-    base_gray_path = "data/dataset_grayscale"
+    base_gray_path = os.path.join(BASE_DIR, "data", "dataset_grayscale")
     source_dir = os.path.join(base_gray_path, "scale_1.0x")
 
     if not os.path.exists(source_dir):
@@ -23,12 +24,9 @@ def scale_grayscale(factors):
 
         for img_name in images:
             dest_path = os.path.join(target_dir, img_name)
-            # Apre l'immagine originale, la ridimensiona e la salva solo se non esiste già
             if not os.path.exists(dest_path):
                 with Image.open(os.path.join(source_dir, img_name)) as img:
-                    # Calcola le nuove dimensioni (Larghezza x Fattore, Altezza x Fattore)
                     new_size = (int(img.width * f), int(img.height * f))
-                    # Applica il ridimensionamento
                     resized = img.resize(new_size, Image.Resampling.LANCZOS)
                     resized.save(dest_path)
                     
