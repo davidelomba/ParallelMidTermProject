@@ -139,7 +139,7 @@ GrayImage closing_parallel(const GrayImage& input, int kernel_size) {
     return erode_parallel(temp, kernel_size);
 }
 
-// Funzione che ottimizza l'erosione parallela separando il filtro bidimensionale in due passaggi unidimensionali (orizzontale e poi verticale)
+// Funzione che ottimizza l'erosione parallela separando il kernel bidimensionale in due passaggi unidimensionali (orizzontale e poi verticale)
 GrayImage erode_separable_parallel(const GrayImage& input, int kernel_size) {
     int w = input.getWidth();
     int h = input.getHeight();
@@ -179,7 +179,7 @@ GrayImage erode_separable_parallel(const GrayImage& input, int kernel_size) {
     return output;
 }
 
-// Funzione che ottimizza la dilatazione parallela separando il filtro bidimensionale in due passaggi unidimensionali (orizzontale e poi verticale)
+// Funzione che ottimizza la dilatazione parallela separando il kernel bidimensionale in due passaggi unidimensionali (orizzontale e poi verticale)
 GrayImage dilate_separable_parallel(const GrayImage& input, int kernel_size) {
     int w = input.getWidth();
     int h = input.getHeight();
@@ -471,7 +471,7 @@ GrayImage opening_pipeline_multithread(const GrayImage& input, int kernel_size) 
                 int min_needed_row = std::max(0, start_y - radius);
                 int max_needed_row = std::min(height - 1, end_y - 1 + radius);
                 
-                // Converzione delle righe necessarie nei rispettivi indici di chunk
+                // Conversione delle righe necessarie nei rispettivi indici di chunk
                 int min_needed_chunk = min_needed_row / chunk_size;
                 int max_needed_chunk = max_needed_row / chunk_size;
                 
@@ -490,7 +490,7 @@ GrayImage opening_pipeline_multithread(const GrayImage& input, int kernel_size) 
                 }
             }
         }
-    } // Barriera implicita OpenMP
+    }
     return output;
 }
 
@@ -570,8 +570,8 @@ GrayImage closing_pipeline_multithread(const GrayImage& input, int kernel_size) 
 
 
 
-// Funzione che ottimizza l'erosione parallela separando il filtro 2D in due passaggi 1D (orizzontale e verticale)
-// Configurazione Ottima: Sfrutta il ciclo Row-Major, Collapse(2) e lo Scheduling Dinamico senza pragma SIMD manuali.
+// Funzione che ottimizza l'erosione parallela separando il kernel 2D in due passaggi 1D (orizzontale e verticale)
+// Configurazione Ottima: sfrutta il ciclo Row-Major, Collapse(2) e lo Scheduling Dinamico senza pragma SIMD manuali.
 GrayImage erode_separable_parallel_optimal(const GrayImage& input, int kernel_size) {
     int w = input.getWidth();
     int h = input.getHeight();
@@ -611,8 +611,8 @@ GrayImage erode_separable_parallel_optimal(const GrayImage& input, int kernel_si
     return output;
 }
 
-// Funzione che ottimizza la dilatazione parallela separando il filtro 2D in due passaggi 1D (orizzontale e verticale)
-// Configurazione Ottima: Sfrutta il ciclo Row-Major, Collapse(2) e lo Scheduling Dinamico senza pragma SIMD manuali.
+// Funzione che ottimizza la dilatazione parallela separando il kernel 2D in due passaggi 1D (orizzontale e verticale)
+// Configurazione Ottima: sfrutta il ciclo Row-Major, Collapse(2) e lo Scheduling Dinamico senza pragma SIMD manuali.
 GrayImage dilate_separable_parallel_optimal(const GrayImage& input, int kernel_size) {
     int w = input.getWidth();
     int h = input.getHeight();
