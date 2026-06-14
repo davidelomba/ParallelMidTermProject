@@ -442,7 +442,7 @@ void run_memory_access_test(const std::vector<std::string>& scales, const std::v
                 std::this_thread::sleep_for(std::chrono::seconds(2));
                 auto r_ero = run_morphology_benchmark(
                     input_path, output_base + "/eroded", 
-                    "Erosione Memory Access", 
+                    "Erosione", 
                     k, 
                     erode_parallel,          
                     erode_parallel_column
@@ -456,7 +456,7 @@ void run_memory_access_test(const std::vector<std::string>& scales, const std::v
                 std::this_thread::sleep_for(std::chrono::seconds(2));
                 auto r_dil = run_morphology_benchmark(
                     input_path, output_base + "/dilated", 
-                    "Dilatazione Memory Access", 
+                    "Dilatazione", 
                     k, 
                     dilate_parallel,          
                     dilate_parallel_column   
@@ -471,7 +471,7 @@ void run_memory_access_test(const std::vector<std::string>& scales, const std::v
                 std::this_thread::sleep_for(std::chrono::seconds(2));
                 auto r_ope = run_morphology_benchmark(
                     input_path, output_base + "/opening", 
-                    "Opening Memory Access", 
+                    "Opening", 
                     k, 
                     opening_parallel,          
                     opening_parallel_column   
@@ -485,7 +485,7 @@ void run_memory_access_test(const std::vector<std::string>& scales, const std::v
                 std::this_thread::sleep_for(std::chrono::seconds(2));
                 auto r_clo = run_morphology_benchmark(
                     input_path, output_base + "/closing", 
-                    "Closing Memory Access", 
+                    "Closing", 
                     k, 
                     closing_parallel,          
                     closing_parallel_column   
@@ -608,22 +608,22 @@ void run_optimal_vs_sequential_test(const std::vector<std::string>& scales, cons
                 std::cout << "\n>>> Scale: " << scale << " | Threads: " << t << " | Kernel Size: " << k << "x" << k << " <<<" << std::endl;
 
                 std::this_thread::sleep_for(std::chrono::seconds(2));
-                auto r_ero = run_morphology_benchmark(input_path, output_base + "/eroded_optimal", "Erosione Ottimale", k, erode_sequential, erode_separable_parallel_optimal);
+                auto r_ero = run_morphology_benchmark(input_path, output_base, "Erosione", k, erode_sequential, erode_separable_parallel_optimal);
                 csv_file << "Optimal Evaluation," << scale << "," << k << "," << t << ",Erosione," 
                          << r_ero.mean_t1 << "," << r_ero.ci_t1 << "," << r_ero.mean_t2 << "," << r_ero.ci_t2 << "," << r_ero.avg_speedup << "," << r_ero.ci_speedup << "\n";
                 /*
                 std::this_thread::sleep_for(std::chrono::seconds(2));
-                auto r_dil = run_morphology_benchmark(input_path, output_base + "/dilated_optimal", "Dilatazione Ottimale", k, dilate_sequential, dilate_separable_parallel_optimal);
+                auto r_dil = run_morphology_benchmark(input_path, output_base, "Dilatazione", k, dilate_sequential, dilate_separable_parallel_optimal);
                 csv_file << "Optimal Evaluation," << scale << "," << k << "," << t << ",Dilatazione," 
                          << r_dil.mean_t1 << "," << r_dil.ci_t1 << "," << r_dil.mean_t2 << "," << r_dil.ci_t2 << "," << r_dil.avg_speedup << "," << r_dil.ci_speedup << "\n";
 
                 std::this_thread::sleep_for(std::chrono::seconds(2));
-                auto r_ope = run_morphology_benchmark(input_path, output_base + "/opening_optimal", "Opening Ottimale", k, opening_sequential, opening_separable_parallel_optimal);
+                auto r_ope = run_morphology_benchmark(input_path, output_base, "Opening", k, opening_sequential, opening_separable_parallel_optimal);
                 csv_file << "Optimal Evaluation," << scale << "," << k << "," << t << ",Opening," 
                          << r_ope.mean_t1 << "," << r_ope.ci_t1 << "," << r_ope.mean_t2 << "," << r_ope.ci_t2 << "," << r_ope.avg_speedup << "," << r_ope.ci_speedup << "\n";
 
                 std::this_thread::sleep_for(std::chrono::seconds(2));
-                auto r_clo = run_morphology_benchmark(input_path, output_base + "/closing_optimal", "Closing Ottimale", k, closing_sequential, closing_separable_parallel_optimal);
+                auto r_clo = run_morphology_benchmark(input_path, output_base, "Closing", k, closing_sequential, closing_separable_parallel_optimal);
                 csv_file << "Optimal Evaluation," << scale << "," << k << "," << t << ",Closing," 
                          << r_clo.mean_t1 << "," << r_clo.ci_t1 << "," << r_clo.mean_t2 << "," << r_clo.ci_t2 << "," << r_clo.avg_speedup << "," << r_clo.ci_speedup << "\n";
                 */
