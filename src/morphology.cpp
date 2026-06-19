@@ -153,7 +153,7 @@ GrayImage erode_separable_parallel(const GrayImage& input, int kernel_size) {
         for (int x = 0; x < w; ++x) {
             unsigned char min_val = 255;
 
-            #pragma omp simd reduction(min:min_val)
+            //#pragma omp simd reduction(min:min_val)
             for (int kx = -offset; kx <= offset; ++kx) {
                 int nx = std::max(0, std::min(w - 1, x + kx));
                 min_val = std::min(min_val, input.getPixel(nx, y));
@@ -167,7 +167,6 @@ GrayImage erode_separable_parallel(const GrayImage& input, int kernel_size) {
         for (int x = 0; x < w; ++x) {
             unsigned char min_val = 255;
             
-            //#pragma omp simd reduction(min:min_val)
             for (int ky = -offset; ky <= offset; ++ky) {
                 int ny = std::max(0, std::min(h - 1, y + ky));
                 min_val = std::min(min_val, temp.getPixel(x, ny));
@@ -453,9 +452,14 @@ GrayImage opening_pipeline_multithread(const GrayImage& input, int kernel_size) 
                     compute_erosion_for_row(input, temp_eroded, y, kernel_size);
                 }
                 
+                // Garanzia di visibilità: assicura che tutte le scritture su 'temp_eroded' siano visibili prima di notificare che il chunk è pronto
+                #pragma omp flush(temp_eroded) 
                 // Notifica atomica: il chunk 'c' è interamente completato
                 #pragma omp atomic write
                 chunk_ready[c] = 1;
+
+                // Garanzia di visibilità: assicura che la scrittura su 'chunk_ready' sia visibile a tutti i consumatori
+                #pragma omp flush(chunk_ready)
             }
         } 
         else {
@@ -481,8 +485,16 @@ GrayImage opening_pipeline_multithread(const GrayImage& input, int kernel_size) 
                     while (!ready) {
                         #pragma omp atomic read
                         ready = chunk_ready[nc];
+
                     }
+
                 }
+
+                // Garanzia di visibilità: assicura che tutte le scritture su 'chunk_ready' siano visibili prima di iniziare la dilatazione
+                #pragma omp flush(chunk_ready)
+
+                // Garanzia di visibilità: assicura che tutte le scritture su 'temp_eroded' siano visibili prima di iniziare la dilatazione
+                #pragma omp flush(temp_eroded)
                 
                 // Una volta che tutti i chunk necessari sono pronti, viene elaborato il blocco scrivendo su 'output'
                 for (int y = start_y; y < end_y; ++y) {
@@ -532,9 +544,13 @@ GrayImage closing_pipeline_multithread(const GrayImage& input, int kernel_size) 
                 for (int y = start_y; y < end_y; ++y) {
                     compute_dilation_for_row(input, temp_dilated, y, kernel_size);
                 }
+
+                #pragma omp flush(temp_dilated) 
                 
                 #pragma omp atomic write
                 chunk_ready[c] = 1;
+
+                #pragma omp flush(chunk_ready)
             }
         } 
         else {
@@ -557,6 +573,9 @@ GrayImage closing_pipeline_multithread(const GrayImage& input, int kernel_size) 
                         ready = chunk_ready[nc];
                     }
                 }
+
+                #pragma omp flush(chunk_ready)
+                #pragma omp flush(temp_dilated)
                 
                 for (int y = start_y; y < end_y; ++y) {
                     compute_erosion_for_row(temp_dilated, output, y, kernel_size);

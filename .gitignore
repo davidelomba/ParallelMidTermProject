@@ -15,3 +15,5 @@ graphs/*
 
 data/**/*
 !data/.gitkeep
+
+latex/
