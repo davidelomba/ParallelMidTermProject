@@ -322,7 +322,7 @@ GrayImage erode_parallel_dynamic(const GrayImage& input, int kernel_size) {
             unsigned char min_val = 255;
 
             for (int ky = -offset; ky <= offset; ++ky) {
-                //#pragma omp simd reduction(min:min_val)
+                // #pragma omp simd reduction(min:min_val)
                 for (int kx = -offset; kx <= offset; ++kx) {
                     int nx = std::max(0, std::min(w - 1, x + kx));
                     int ny = std::max(0, std::min(h - 1, y + ky));
