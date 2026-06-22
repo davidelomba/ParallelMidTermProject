@@ -4,6 +4,12 @@
 #include <vector>
 #include <iostream>
 
+// Struttura per prevenire false sharing tra i thread nella pipeline concorrente 
+struct alignas(64) PaddedFlag {
+    int ready = 0;
+};
+
+
 // Funzione che esegue l'erosione morfologica sequenziale su un'immagine in scala di grigi utilizzando un kernel quadrato
 GrayImage erode_sequential(const GrayImage& input, int kernel_size) {
     int w = input.getWidth();
@@ -405,7 +411,7 @@ GrayImage closing_parallel_column(const GrayImage& input, int kernel_size) {
 }
 
 // Funzione che implementa l'operazione di opening tramite un modello di pipeline concorrente dividendo i thread in producers (erosione) e consumers (dilatazione)
-GrayImage opening_pipeline_multithread(const GrayImage& input, int kernel_size) {
+/*GrayImage opening_pipeline_multithread(const GrayImage& input, int kernel_size) {
     int num_threads = omp_get_max_threads(); 
     
     // La pipeline richiede almeno 2 thread (1 prod e 1 cons)
@@ -504,10 +510,93 @@ GrayImage opening_pipeline_multithread(const GrayImage& input, int kernel_size) 
         }
     }
     return output;
+}*/
+
+GrayImage opening_pipeline_multithread(const GrayImage& input, int kernel_size) {
+    int num_threads = omp_get_max_threads(); 
+    
+    // La pipeline richiede almeno 2 thread (1 prod e 1 cons)
+    if (num_threads < 2) {
+        num_threads = 2; 
+    }
+
+    int radius = kernel_size / 2;
+    int width = input.getWidth();
+    int height = input.getHeight();
+
+    GrayImage output(width, height);
+    GrayImage temp_eroded(width, height);
+    
+    const int chunk_size = 32; 
+    int num_chunks = (height + chunk_size - 1) / chunk_size;
+    
+    std::vector<PaddedFlag> chunk_ready(num_chunks);
+
+    #pragma omp parallel num_threads(num_threads) shared(chunk_ready, temp_eroded, output, input)
+    {
+        int my_id = omp_get_thread_num();
+        int total_threads = omp_get_num_threads();
+        
+        int prod_threads = total_threads / 2;
+        int cons_threads = total_threads - prod_threads;
+        
+        if (my_id < prod_threads) {
+            // PRODUCER: EROSIONE
+            int prod_id = my_id; 
+            
+            for (int c = prod_id; c < num_chunks; c += prod_threads) {
+                int start_y = c * chunk_size;
+                int end_y = std::min(height, start_y + chunk_size);
+                
+                for (int y = start_y; y < end_y; ++y) {
+                    compute_erosion_for_row(input, temp_eroded, y, kernel_size);
+                }
+                
+                #pragma omp flush(temp_eroded) 
+                
+                #pragma omp atomic write
+                chunk_ready[c].ready = 1;
+
+                #pragma omp flush(chunk_ready)
+            }
+        } 
+        else {
+            // CONSUMER: DILATAZIONE
+            int cons_id = my_id - prod_threads; 
+            
+            for (int c = cons_id; c < num_chunks; c += cons_threads) {
+                int start_y = c * chunk_size;
+                int end_y = std::min(height, start_y + chunk_size);
+                
+                int min_needed_row = std::max(0, start_y - radius);
+                int max_needed_row = std::min(height - 1, end_y - 1 + radius);
+                
+                int min_needed_chunk = min_needed_row / chunk_size;
+                int max_needed_chunk = max_needed_row / chunk_size;
+                
+                for (int nc = min_needed_chunk; nc <= max_needed_chunk; ++nc) {
+                    int ready = 0;
+                    while (!ready) {
+
+                        #pragma omp atomic read
+                        ready = chunk_ready[nc].ready;
+                    }
+                }
+
+                #pragma omp flush(chunk_ready)
+                #pragma omp flush(temp_eroded)
+                
+                for (int y = start_y; y < end_y; ++y) {
+                    compute_dilation_for_row(temp_eroded, output, y, kernel_size);
+                }
+            }
+        }
+    }
+    return output;
 }
 
 // Funzione che implementa l'operazione di closing tramite un modello di pipeline concorrente dividendo i thread in producers (dilatazione) e consumers (erosione)
-GrayImage closing_pipeline_multithread(const GrayImage& input, int kernel_size) {
+/*GrayImage closing_pipeline_multithread(const GrayImage& input, int kernel_size) {
     int num_threads = omp_get_max_threads(); 
     if (num_threads < 2) {
         num_threads = 2; 
@@ -585,7 +674,87 @@ GrayImage closing_pipeline_multithread(const GrayImage& input, int kernel_size) 
     }
     return output;
 }
+*/
 
+GrayImage closing_pipeline_multithread(const GrayImage& input, int kernel_size) {
+    int num_threads = omp_get_max_threads(); 
+    if (num_threads < 2) {
+        num_threads = 2; 
+    }
+
+    int radius = kernel_size / 2;
+    int width = input.getWidth();
+    int height = input.getHeight();
+
+    GrayImage output(width, height);
+    
+    // Immagine temporanea per la dilatazione
+    GrayImage temp_dilated(width, height);
+    
+    const int chunk_size = 32; 
+    int num_chunks = (height + chunk_size - 1) / chunk_size;
+    
+    std::vector<PaddedFlag> chunk_ready(num_chunks);
+
+    #pragma omp parallel num_threads(num_threads) shared(chunk_ready, temp_dilated, output, input)
+    {
+        int my_id = omp_get_thread_num();
+        int total_threads = omp_get_num_threads();
+        
+        int prod_threads = total_threads / 2;
+        int cons_threads = total_threads - prod_threads;
+        
+        if (my_id < prod_threads) {
+            // PRODUCER: DILATAZIONE
+            int prod_id = my_id;
+            for (int c = prod_id; c < num_chunks; c += prod_threads) {
+                int start_y = c * chunk_size;
+                int end_y = std::min(height, start_y + chunk_size);
+                
+                for (int y = start_y; y < end_y; ++y) {
+                    compute_dilation_for_row(input, temp_dilated, y, kernel_size);
+                }
+
+                #pragma omp flush(temp_dilated) 
+                
+                #pragma omp atomic write
+                chunk_ready[c].ready = 1;
+
+                #pragma omp flush(chunk_ready)
+            }
+        } 
+        else {
+            // CONSUMER: EROSIONE
+            int cons_id = my_id - prod_threads;
+            for (int c = cons_id; c < num_chunks; c += cons_threads) {
+                int start_y = c * chunk_size;
+                int end_y = std::min(height, start_y + chunk_size);
+                
+                int min_needed_row = std::max(0, start_y - radius);
+                int max_needed_row = std::min(height - 1, end_y - 1 + radius);
+                
+                int min_needed_chunk = min_needed_row / chunk_size;
+                int max_needed_chunk = max_needed_row / chunk_size;
+                
+                for (int nc = min_needed_chunk; nc <= max_needed_chunk; ++nc) {
+                    int ready = 0;
+                    while (!ready) {
+                        #pragma omp atomic read
+                        ready = chunk_ready[nc].ready;
+                    }
+                }
+
+                #pragma omp flush(chunk_ready)
+                #pragma omp flush(temp_dilated)
+                
+                for (int y = start_y; y < end_y; ++y) {
+                    compute_erosion_for_row(temp_dilated, output, y, kernel_size);
+                }
+            }
+        }
+    }
+    return output;
+}
 
 
 
