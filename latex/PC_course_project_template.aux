@@ -1,0 +1,110 @@
+\relax 
+\citation{wikipedia_mm}
+\citation{opencv_morph}
+\citation{opencv_morph}
+\citation{ismail_paper}
+\citation{wikipedia_mm}
+\citation{ismail_paper}
+\citation{opencv_morph}
+\citation{ismail_paper}
+\citation{opencv_morph}
+\citation{ismail_paper}
+\@writefile{toc}{\contentsline {section}{\numberline {1}\hskip -1em.~Introduction}{1}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}\hskip -1em.~Mathematical Formulation}{1}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}\hskip -1em.~Fundamental Operators}{1}{}\protected@file@percent }
+\citation{opencv_morph}
+\citation{wikipedia_mm}
+\citation{opencv_morph}
+\citation{ismail_paper}
+\citation{opencv_morph}
+\citation{ismail_paper}
+\newlabel{fig:orig}{{1a}{2}{}{subfigure.1.1}{}}
+\newlabel{sub@fig:orig}{{a}{2}{}{subfigure.1.1}{}}
+\newlabel{fig:erod}{{1b}{2}{}{subfigure.1.2}{}}
+\newlabel{sub@fig:erod}{{b}{2}{}{subfigure.1.2}{}}
+\newlabel{fig:dilat}{{1c}{2}{}{subfigure.1.3}{}}
+\newlabel{sub@fig:dilat}{{c}{2}{}{subfigure.1.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Comparison of morphological operations.}}{2}{}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:morph_comparison_base}{{1}{2}{}{figure.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}\hskip -1em.~Compound Operations}{2}{}\protected@file@percent }
+\newlabel{fig:orig2}{{2a}{2}{}{subfigure.2.1}{}}
+\newlabel{sub@fig:orig2}{{a}{2}{}{subfigure.2.1}{}}
+\newlabel{fig:open}{{2b}{2}{}{subfigure.2.2}{}}
+\newlabel{sub@fig:open}{{b}{2}{}{subfigure.2.2}{}}
+\newlabel{fig:close}{{2c}{2}{}{subfigure.2.3}{}}
+\newlabel{sub@fig:close}{{c}{2}{}{subfigure.2.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Application of compound operations.}}{2}{}\protected@file@percent }
+\newlabel{fig:opening_closing}{{2}{2}{}{figure.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}\hskip -1em.~Implementation Details}{2}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}\hskip -1em.~Dataset and Preprocessing}{2}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}\hskip -1em.~OpenMP Directives}{2}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}\hskip -1em.~Sequential Algorithm}{3}{}\protected@file@percent }
+\newlabel{subsec:sequential}{{3.3}{3}{}{subsection.3.3}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.1}Erosion and Dilation}{3}{}\protected@file@percent }
+\newlabel{lst:fundamental_seq}{{1}{3}{}{lstlisting.1}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {1}{\ignorespaces Sequential implementation of core Erosion and Dilation operators.}}{3}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.2}Opening and Closing}{3}{}\protected@file@percent }
+\newlabel{lst:compound_seq}{{2}{4}{}{lstlisting.2}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {2}{\ignorespaces Sequential composition for Opening and Closing operations.}}{4}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}\hskip -1em.~Pixel-level Parallelism}{4}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.1}Erosion and Dilation}{4}{}\protected@file@percent }
+\newlabel{lst:parallel_core}{{3}{4}{}{lstlisting.3}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {3}{\ignorespaces OpenMP shared-memory implementation of parallel Erosion and Dilation.}}{4}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.2}Opening and Closing}{5}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}\hskip -1em.~1D Separable Kernels}{5}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.5.1}Algorithmic Shift and Synchronization Overhead}{5}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.5.2}Cache Locality Asymmetry}{6}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.5.3}Composite Filters Considerations}{6}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}\hskip -1em.~Producer-Consumer Pipeline}{6}{}\protected@file@percent }
+\newlabel{subsec:pipeline}{{3.6}{6}{}{subsection.3.6}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.6.1}Thread Partitioning and Work Distribution}{6}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.6.2}Chunk-based Granularity}{6}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.6.3}Synchronization and Memory Visibility}{7}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7}\hskip -1em.~Alternative Implementations Evaluated}{7}{}\protected@file@percent }
+\newlabel{subsec:alternative_implementations}{{3.7}{7}{}{subsection.3.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}\hskip -1em.~Experimental Setup}{7}{}\protected@file@percent }
+\newlabel{sec:experimental_setup}{{4}{7}{}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}\hskip -1em.~Parameter Space and Test Configurations}{8}{}\protected@file@percent }
+\newlabel{subsec:parameter_space}{{4.1}{8}{}{subsection.4.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}\hskip -1em.~Results and Analysis}{9}{}\protected@file@percent }
+\newlabel{sec:results}{{5}{9}{}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}\hskip -1em.~Scalability Analysis: Strong vs. Weak Scaling}{9}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.1}Strong Scaling}{9}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Strong scaling speedup for fixed 4.0x image resolution across different thread counts.}}{9}{}\protected@file@percent }
+\newlabel{fig:strong_scaling}{{3}{9}{}{figure.3}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.2}Weak Scaling}{9}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}\hskip -1em.~Impact of Algorithmic Optimization: 2D vs. 1D Separable Kernels}{9}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Execution time in weak scaling tests.}}{10}{}\protected@file@percent }
+\newlabel{fig:weak_scaling_time}{{4}{10}{}{figure.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Parallel efficiency and speedup in weak scaling.}}{10}{}\protected@file@percent }
+\newlabel{fig:weak_scaling_speedup}{{5}{10}{}{figure.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}\hskip -1em.~Pipeline Efficiency for Composite Operations}{10}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Comparison of 1D Separable Kernels speedup against the 2D baseline at 2.0x and 4.0x image scales (4 Threads).}}{11}{}\protected@file@percent }
+\newlabel{fig:separable_speedup_comparison}{{6}{11}{}{figure.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}\hskip -1em.~Optimal Parallel vs. Sequential Baseline}{11}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Producer-Consumer pipeline speedup over the standard parallel baseline for Opening and Closing operations, at scale 1.0x and 2.0x across increasing thread counts.}}{12}{}\protected@file@percent }
+\newlabel{fig:pipeline_speedup}{{7}{12}{}{figure.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}\hskip -1em.~Summary of Experimental Results}{12}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Speedup of the optimal separable parallel implementation over the sequential 2D baseline, measured for Erosion across three image resolutions and kernel sizes.}}{12}{}\protected@file@percent }
+\newlabel{fig:optimal_speedup}{{8}{12}{}{figure.8}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Speedup of 1D Separable vs. 2D Parallel Baseline (4 threads).}}{12}{}\protected@file@percent }
+\newlabel{tab:separable}{{1}{12}{}{table.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Speedup of the optimal separable parallel implementation vs.\ the sequential 2D baseline, measured for Erosion.}}{12}{}\protected@file@percent }
+\newlabel{tab:optimal}{{2}{12}{}{table.2}{}}
+\bibstyle{ieee}
+\bibdata{egbib}
+\bibcite{ismail_paper}{1}
+\bibcite{opencv_morph}{2}
+\bibcite{wikipedia_mm}{3}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Speedup of the Producer-Consumer pipeline vs.\ the standard parallel baseline for Opening and Closing ($K=7$).}}{13}{}\protected@file@percent }
+\newlabel{tab:pipeline}{{3}{13}{}{table.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Impact of \texttt  {\#pragma omp simd} on Erosion performance (scale 2.0x). Speedup $<1$ indicates a regression.}}{13}{}\protected@file@percent }
+\newlabel{tab:simd}{{4}{13}{}{table.4}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Dynamic vs.\ static scheduling speedup on Erosion (scale 2.0x, $K=15$).}}{13}{}\protected@file@percent }
+\newlabel{tab:scheduling}{{5}{13}{}{table.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Row-Major vs.\ Column-Major access pattern speedup ($K=3$, parallel baseline).}}{13}{}\protected@file@percent }
+\newlabel{tab:memory}{{6}{13}{}{table.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}\hskip -1em.~Conclusions}{13}{}\protected@file@percent }
+\newlabel{sec:conclusions}{{6}{13}{}{section.6}{}}
+\gdef \@abspage@last{13}

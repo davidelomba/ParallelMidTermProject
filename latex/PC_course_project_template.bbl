@@ -1,0 +1,21 @@
+\begin{thebibliography}{1}\itemsep=-1pt
+
+\bibitem{ismail_paper}
+M.~A. Ismail and K.~Shamim.
+\newblock Parallel implementation of morphological image processing algorithm
+  for {GPGPU}.
+\newblock In {\em International Conference on Recent Advances in Computer
+  Systems (RACS)}. NED University of Engineering \& Technology, Karachi,
+  Pakistan, 2015.
+
+\bibitem{opencv_morph}
+{OpenCV Developers}.
+\newblock Opencv: Morphological transformations.
+\newblock \url{https://docs.opencv.org/}, 2025.
+
+\bibitem{wikipedia_mm}
+{Wikipedia contributors}.
+\newblock Mathematical morphology --- {Wikipedia}{,} the free encyclopedia.
+\newblock \url{https://en.wikipedia.org/wiki/Mathematical_morphology}, 2026.
+
+\end{thebibliography}
