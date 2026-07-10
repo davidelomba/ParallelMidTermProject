@@ -1,0 +1,260 @@
+\documentclass{beamer}
+\usepackage{amsfonts,amsmath,oldgerm}
+\usetheme{sintef}
+
+\newcommand{\testcolor}[1]{\colorbox{#1}{\textcolor{#1}{test}}~\texttt{#1}}
+
+\usefonttheme[onlymath]{serif}
+
+% Assicurati di avere un'immagine in assets/background o commenta la riga seguente
+\titlebackground*{assets/background}
+
+\newcommand{\hrefcol}[2]{\textcolor{cyan}{\href{#1}{#2}}}
+
+\title{Parallel Morphological Image Processing}
+\subtitle{Accelerating morphological operations via C++17 and OpenMP}
+\author{\href{mailto:davide.lombardi2@edu.unifi.it}{Davide Lombardi}}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+% --- SLIDE 1 ---
+\begin{frame}{Introduction \& Objectives}
+  \begin{itemize}
+    \item \textbf{Mathematical Morphology (MM):} Robust framework for extracting region descriptors (boundaries, skeletons) and noise reduction.
+    \item \textbf{The Goal:} Accelerate morphological operations for high-resolution imagery, transitioning from a sequential approach to a highly optimized parallel framework.
+    \item \textbf{Technology Stack:} \texttt{C++17} and \texttt{OpenMP}.
+    \item \textbf{Benchmark Dataset:} BSDS500 (converted to grayscale, scaled up to 4x to evaluate scalability).
+  \end{itemize}
+\end{frame}
+
+% --- SLIDE 2 ---
+\begin{frame}{Context \& Sequential Baseline}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Fundamental Operators}
+        \begin{itemize}
+          \item \textbf{Erosion:} Minimum local value (discards small-scale noise).
+          \item \textbf{Dilation:} Maximum local value.
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{colorblock}[white]{sintefred}{The Bottleneck}
+        \begin{itemize}
+          \item Naive 2D stencil execution scales quadratically: $\mathcal{O}(M \times N \times K^2)$.
+          \item \textbf{Compound operations} (Opening/Closing) require multiple full-image passes.
+          \item Destroys \textit{temporal locality} and creates severe memory bandwidth issues.
+        \end{itemize}
+      \end{colorblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% --- SLIDE 3 ---
+\begin{frame}{Hardware Approach: OpenMP Parallelization}
+  \framesubtitle{Exploiting Embarrassingly Parallel workloads}
+  \begin{itemize}
+    \item Morphological stencils are \textit{read-only} regarding the input state (no loop-carried dependencies).
+    \item \textbf{Loop Collapsing:} \texttt{collapse(2)} merges X and Y spatial loops, increasing work granularity and preventing thread starvation.
+    \item \textbf{Memory Safety:} Use of \texttt{default(none)} and strict variable scoping (e.g., local \texttt{min\_val}) avoids locks/atomic synchronizations.
+    \item \textbf{Scheduling Strategy:} While workload per pixel is theoretically static, \textbf{dynamic scheduling} marginally outperforms static by mitigating \textit{false sharing} and OS scheduling jitter.
+  \end{itemize}
+\end{frame}
+
+% --- SLIDE 4 ---
+\begin{frame}{Algorithmic Optimization: 1D Separable Kernels}
+  \begin{itemize}
+    \item \textbf{The Dominant Lever:} Transitioning from a 2D stencil to two consecutive 1D passes (Horizontal $\rightarrow$ Vertical).
+    \item \textbf{Complexity Reduction:} From $\mathcal{O}(K^2)$ down to $\mathcal{O}(2K)$.
+      \begin{itemize}
+        \item \textit{Example:} A $15 \times 15$ kernel drops from 225 to just 30 operations per pixel.
+      \end{itemize}
+  \end{itemize}
+  
+  \begin{block}{The Cache Asymmetry Issue}
+    \begin{itemize}
+      \item \textbf{Horizontal Pass:} Optimal spatial locality. Glides along adjacent columns mirroring row-major memory layout.
+      \item \textbf{Vertical Pass:} Severely degraded. Reads vertically across different rows, overwhelming the cache and causing memory-bound slowdowns.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+% --- SLIDE 5 ---
+\begin{frame}{Architecture: Producer-Consumer Pipeline}
+  \framesubtitle{Solving the Fork-Join problem for compound operations}
+  \begin{itemize}
+    \item \textbf{The Challenge:} 1D Opening requires 4 strict passes (H-Erosion $\rightarrow$ V-Erosion $\rightarrow$ H-Dilation $\rightarrow$ V-Dilation). A standard Fork-Join doubles memory footprint and synchronization barriers.
+    \item \textbf{The Pipeline Solution:}
+      \begin{itemize}
+        \item Thread pool is halved within a single parallel region.
+        \item \textbf{Producers (Erosion):} Compute 1D passes and store in an intermediate buffer.
+        \item \textbf{Consumers (Dilation):} Fetch immediately from the buffer to compute final passes.
+      \end{itemize}
+    \item \textbf{Result:} Overlaps execution, drastically reduces global memory traffic, and improves temporal locality.
+  \end{itemize}
+\end{frame}
+
+% --- SLIDE 6 ---
+\begin{frame}{Experimental Setup}
+  \begin{itemize}
+    \item \textbf{Environment:} Benchmarks conducted on a physical quad-core CPU architecture to strictly trace hardware scaling limits.
+    \item \textbf{Dataset (BSDS500):} Diverse real-world image benchmark.
+    \item \textbf{Scaling Methodology:} 
+      \begin{itemize}
+        \item \textit{Strong Scaling:} Evaluating performance gains while increasing thread count on fixed image sizes.
+        \item \textit{Weak Scaling:} Images upscaled by 2x and 4x to analyze throughput when proportional workload is added.
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+
+% --- SLIDE 7 ---
+\begin{chapter}[assets/background]{maincolor}{Performance Results}
+\end{chapter}
+
+\begin{frame}{Algorithmic Reduction: 1D vs 2D Performance}
+  \begin{columns}
+    \begin{column}{0.45\textwidth}
+      \begin{itemize}
+        \item \textbf{The Baseline:} Comparison between 1D Separable Kernels and the standard 2D parallel baseline.
+        \item \textbf{The Impact:} Transitioning to linear $\mathcal{O}(2K)$ complexity acts as the primary performance multiplier.
+        \item \textbf{Memory Bound:} As kernel size $K$ increases, pure computations drop, but memory bandwidth becomes the new bottleneck (especially due to the vertical pass cache misses).
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+          \centering
+          % Sostituisci con l'immagine della "Figure 6" del tuo report
+          \includegraphics[width=\textwidth]{assets/figure6_1d_vs_2d.png}
+          \caption{Speedup of 1D Separable Kernels vs 2D baseline}
+      \end{figure}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% --- SLIDE 8 ---
+\begin{frame}{Architecture: Producer-Consumer Pipeline}
+  \begin{columns}
+    \begin{column}{0.45\textwidth}
+      \begin{itemize}
+        \item \textbf{Context:} Optimizing compound operations (Opening \& Closing).
+        \item \textbf{Pipeline Advantage:} Overlapping Erosion and Dilation inside a single parallel region avoids the strict Fork-Join barrier.
+        \item \textbf{Performance Gain:} Yields up to \textbf{1.67x} speedup over the standard parallel baseline at low thread counts.
+        \item \textbf{Scaling Behavior:} The pipeline advantage diminishes at higher thread counts due to increased synchronization overhead.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+          \centering
+          % Sostituisci con l'immagine della "Figure 7" del tuo report
+          \includegraphics[width=\textwidth]{assets/figure7_pipeline.png}
+          \caption{Pipeline speedup for compound operations}
+      \end{figure}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% --- SLIDE 9 ---
+\begin{frame}{Scalability Analysis: Strong \& Weak Scaling}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+          \centering
+          % Sostituisci con l'immagine della "Figure 3" del tuo report
+          \includegraphics[width=0.85\textwidth]{assets/figure3_strong_scaling.png}
+          \caption{Strong Scaling (Fixed Workload)}
+      \end{figure}
+      \vspace{-0.3cm}
+      \begin{itemize}
+          \footnotesize
+          \item Speedup saturates at \textbf{3.5x--4.0x} on 4 physical cores.
+          \item Constrained by hardware limits and \textit{Amdahl's Law} (residual sequential fraction).
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+          \centering
+          % Sostituisci con l'immagine della "Figure 4" o "Figure 5" del tuo report
+          \includegraphics[width=0.85\textwidth]{assets/figure4_weak_scaling.png}
+          \caption{Weak Scaling (Scaled Workload)}
+      \end{figure}
+      \vspace{-0.3cm}
+      \begin{itemize}
+          \footnotesize
+          \item Execution times remain relatively stable as image resolution scales with threads.
+          \item Indicates an effective resource distribution across cores.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% --- SLIDE 10 ---
+\begin{frame}{Ineffective Strategies \& Lessons Learned}
+  \framesubtitle{What didn't work and why}
+  \begin{itemize}
+    \item \textbf{Explicit SIMD Annotations:} 
+      \begin{itemize}
+        \item \texttt{\#pragma omp simd} proved ineffective in accelerating the core loops. 
+        \item This is likely due to the compiler's auto-vectorization already being optimal, or the \texttt{min}/\texttt{max} conditional branching limiting SIMD register exploitation.
+      \end{itemize}
+    \vspace{0.3cm}
+    \item \textbf{Column-Major Traversal:} 
+      \begin{itemize}
+        \item Attempting to traverse memory column-by-column to speed up the memory-bound Vertical 1D pass failed.
+        \item RAM physical architecture is inherently \textit{row-major}; software workarounds introduced unnecessary overhead without yielding any cache benefits.
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+
+% --- SLIDE 11 ---
+\begin{frame}{Peak Performance \& Conclusions}
+  \begin{columns}
+    \begin{column}{0.45\textwidth}
+      \begin{colorblock}[white]{sintefblu1}{Optimal Configuration}
+        \begin{center}
+          \Large \textbf{22x Peak Speedup}
+        \end{center}
+        Achieved combining 1D kernels and OpenMP ($K=15$, 4 threads) against the sequential baseline.
+      \end{colorblock}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \item \textbf{Core Takeaway:} True acceleration requires a \textit{multi-tiered} approach. Hardware scaling a flawed $\mathcal{O}(K^2)$ algorithm is insufficient without algorithmic complexity reduction.
+        \item \textbf{Future Developments:} 
+          \begin{itemize}
+            \item Extend the framework to Heterogeneous Computing (GPUs via \textbf{CUDA}).
+            \item The SIMT architecture and Shared Memory could definitively solve the vertical pass memory bottleneck.
+          \end{itemize}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% --- SLIDE (Opzionale) ---
+\begin{frame}{Visual Results (BSDS500)}
+  \framesubtitle{Qualitative evaluation of compound operations}
+  \begin{columns}
+    \begin{column}{0.33\textwidth}
+      \centering
+      \textbf{Original (Grayscale)} \\
+      \vspace{0.2cm}
+      \includegraphics[width=\textwidth]{assets/original_image.png}
+    \end{column}
+    \begin{column}{0.33\textwidth}
+      \centering
+      \textbf{Opening ($K=15$)} \\
+      \vspace{0.2cm}
+      \includegraphics[width=\textwidth]{assets/opening_image.png}
+    \end{column}
+    \begin{column}{0.33\textwidth}
+      \centering
+      \textbf{Closing ($K=15$)} \\
+      \vspace{0.2cm}
+      \includegraphics[width=\textwidth]{assets/closing_image.png}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\backmatter
+\end{document}
