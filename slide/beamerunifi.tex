@@ -116,19 +116,6 @@
   \end{itemize}
 \end{frame}
 
-% --- SLIDE 6 ---
-\begin{frame}{Benchmarking Methodology}
-  \begin{itemize}
-    \item \textbf{Target Hardware:} Rigorous execution on a physical Quad-Core CPU to limit fictitious hyper-threading influence
-    \item \textbf{Dataset:} 200 heterogeneous images extracted from BSDS500
-    \item \textbf{Automated Pre-processing:} Python pipeline for uniform conversion and upscaling
-    \item \textbf{Evaluation Metrics:}
-      \begin{itemize}
-        \item \textit{Strong Scaling:} Maintaining workload (2x/4x) while scaling physical thread count
-        \item \textit{Weak Scaling:} Balanced and proportional increase of computing resources and resolution (data volume)
-      \end{itemize}
-  \end{itemize}
-\end{frame}
 
 
 \begin{chapter}[assets/background]{maincolor}{Performance Results}
@@ -243,11 +230,10 @@
     \end{column}
     \begin{column}{0.55\textwidth}
       \begin{itemize}
-        \item \textbf{Hardware/Software Conclusion:} Bare multithreading cannot save a flawed algorithm. Hardware/software integration is the only path to High-Performance
+        \item \textbf{Hardware/Software Conclusion:} bare multithreading can't save a flawed algorithm. Hardware/software integration is the only path to raise high performance
         \item \textbf{Heterogeneous Computing (Future Work):}
           \begin{itemize}
             \item Porting the logic to GPU architectures (CUDA)
-            \item The SIMT model and hardware Shared Memory would resolve vertical memory cache asymmetries
           \end{itemize}
       \end{itemize}
     \end{column}
@@ -255,7 +241,7 @@
 \end{frame}
 
 % --- SLIDE (Opzionale) ---
-\begin{frame}{Visual Results (BSDS500)}  
+\begin{frame}{Visual Results}  
   \begin{columns}
     \begin{column}{0.33\textwidth}
       \centering

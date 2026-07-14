@@ -512,10 +512,10 @@ those, minimizing unnecessary synchronization.
 The experimental results confirm the validity of this architectural choice.
 As shown in Figure~\ref{fig:pipeline_speedup}, the 
 pipeline consistently outperforms the standard parallel baseline, achieving speedups 
-ranging from approximately \textbf{1.2x} to \textbf{1.7x} depending on the image 
+ranging from approximately \textbf{1.2x} to \textbf{1.5x} depending on the image 
 resolution and thread count. However, the speedup exhibits a 
 monotonically decreasing trend as the number of threads increases: at 2 
-threads the gain peaks at roughly \textbf{1.55x} (scale 1.0x) and \textbf{1.67x} 
+threads the gain peaks at roughly \textbf{1.41x} (scale 1.0x) and \textbf{1.52x} 
 (scale 2.0x), while at 8 threads it degrades to approximately \textbf{1.20x} and 
 \textbf{1.35x} respectively.
 
@@ -748,7 +748,7 @@ of algorithmic reduction (1D separable kernels) and thread-level parallelism
 \textbf{22x} over the sequential baseline at $K=15$ with 4 threads, confirming 
 that algorithmic complexity reduction is the dominant lever for performance. 
 Additionally, the Producer-Consumer pipeline provides gains of up to 
-\textbf{1.67x} for compound operations at low thread counts, while explicit 
+\textbf{1.52x} for compound operations at low thread counts, while explicit 
 SIMD annotations and column-major traversal prove ineffective in this context. 
 As a potential development of the framework, extending it to 
 support heterogeneous computing on GPUs via CUDA would offer greater scalability.
