@@ -145,8 +145,8 @@
       \vspace{-0.3cm}
       \begin{itemize}
           \footnotesize
-          \item Constant execution times when doubling workload and cores
-          \item Confirms excellent hardware resource distribution
+          \item Efficiency drops from \textbf{1.0} (1 thread) to \textbf{0.73} (4 threads)
+          \item Collapses to \textbf{~0.23} at 16 threads: hyper-threading and RAM bandwidth limits
       \end{itemize}
     \end{column}
   \end{columns}
@@ -181,7 +181,7 @@
     \begin{column}{0.45\textwidth}
       \begin{itemize}
         \item \textbf{Focus:} specific optimization for Opening and Closing
-        \item \textbf{Peak Efficiency:} yields up to a \textbf{1.67x} performance boost over the standard parallel baseline
+        \item \textbf{Peak Efficiency:} yields up to a \textbf{1.52x} performance boost over the standard parallel baseline
 \item \textbf{High-Concurrency Contention:}
           \begin{itemize}
             \item Active \textit{spin-wait} loops saturate physical cores under high logical thread counts

@@ -430,7 +430,22 @@ This combination slows down the execution.
 \end{figure}
 
 \subsubsection{Weak Scaling}
-Weak scaling was measured by increasing both the image resolution (from \textbf{1.0x} to \textbf{4.0x}) and the thread count proportionally. Ideally, the execution time should remain constant, yielding an efficiency of 1.0. However, the experimental data shows a gradual increase in execution time, with the parallel efficiency dropping from 1.0 down to approximately \textbf{0.4} at 8 threads. This behavior confirms that as the data volume grows, the spatial locality of the cache hierarchy degrades; the overhead of managing a lot of threads in a Fork-Join model and the strict RAM bandwidth limits for large matrices, makes perfect weak scaling unachievable for this specific memory-bound workload.
+Weak scaling was measured by increasing both
+the image resolution (from 1.0x to 4.0x) and the
+thread count proportionally (1, 4, and 16 threads).
+Ideally, the execution time should remain constant,
+yielding an efficiency of 1.0. However, the experimental
+data shows a gradual increase in execution time, with
+the average parallel efficiency across the four operations
+dropping from approximately \textbf{1.0} at 1 thread to
+\textbf{0.73} at 4 threads, and collapsing further to
+\textbf{0.23} at 16 threads. This behavior confirms that
+as the data volume grows, the spatial locality of the
+cache hierarchy degrades; the overhead of managing a
+lot of threads in a Fork-Join model and the strict RAM
+bandwidth limits for large matrices, makes perfect weak
+scaling unachievable for this specific memory-bound
+workload.
 
 \begin{figure}[htbp]
     \centering
