@@ -471,9 +471,11 @@ As shown in the separable speedup plots (Figure \ref{fig:separable_speedup_compa
 
 On the other hand, for large kernels ($K=15$), the speedup scales dramatically. At the 2.0x scale, performance reaches peaks of \textbf{13.4x} for Dilation and \textbf{6.8x} for Erosion. When increasing the resolution to 4.0x, the peaks remain exceptional (\textbf{11.9x} for Dilation and \textbf{6.6x} for Erosion) but slightly lower compared to the 2.0x scenario. This increase in speedup confirms that for large structuring elements, bypassing over 200 redundant operations per pixel overwhelmingly compensates for the algorithmic overhead. 
 
-A noteworthy observation is the consistent speedup asymmetry between 
-Dilation and Erosion: across all kernel sizes and resolutions, Dilation 
-systematically achieves approximately twice the speedup of Erosion. Inspecting 
+A noteworthy observation is the consistent speedup asymmetry between
+Dilation and Erosion: for medium and large kernel sizes ($K \geq 7$),
+Dilation systematically achieves approximately twice the speedup of
+Erosion across both resolutions, an asymmetry that narrows 
+at $K=3$ (where the ratio drops to roughly $1.3\times$). Inspecting 
 the raw timing data reveals that this asymmetry originates not from a faster 
 separable execution, but from a slower 2D parallel baseline for Dilation. 
 At $K=15$ with 4 threads, the 2D baseline for Dilation is already significantly 

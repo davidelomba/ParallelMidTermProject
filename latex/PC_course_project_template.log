@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.10.27)  14 JUL 2026 16:28
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.10.27)  16 JUL 2026 13:11
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -607,7 +607,7 @@ Overfull \hbox (1.35292pt too wide) in paragraph at lines 452--465
 
 
 [9 <./img/strong_scaling.png>]
-Underfull \hbox (badness 1253) in paragraph at lines 474--486
+Underfull \hbox (badness 1253) in paragraph at lines 474--488
 []\OT1/ptm/m/n/12 A note-wor-thy ob-ser-va-tion is the con-sis-tent
  []
 
@@ -616,39 +616,39 @@ Underfull \hbox (badness 1253) in paragraph at lines 474--486
 <img/separable_speedup_scale_2.0x.png, id=55, 867.24pt x 505.89pt>
 File: img/separable_speedup_scale_2.0x.png Graphic file (type png)
 <use img/separable_speedup_scale_2.0x.png>
-Package pdftex.def Info: img/separable_speedup_scale_2.0x.png  used on input line 502.
+Package pdftex.def Info: img/separable_speedup_scale_2.0x.png  used on input line 504.
 (pdftex.def)             Requested size: 237.13594pt x 138.32895pt.
 <img/separable_speedup_scale_4.0x.png, id=56, 867.24pt x 505.89pt>
 File: img/separable_speedup_scale_4.0x.png Graphic file (type png)
 <use img/separable_speedup_scale_4.0x.png>
-Package pdftex.def Info: img/separable_speedup_scale_4.0x.png  used on input line 507.
+Package pdftex.def Info: img/separable_speedup_scale_4.0x.png  used on input line 509.
 (pdftex.def)             Requested size: 237.13594pt x 138.32895pt.
 
 
 [10 <./img/weak_scaling_time.png> <./img/weak_scaling_speedup.png>]
 
 
-Underfull \hbox (badness 1226) in paragraph at lines 537--550
+Underfull \hbox (badness 1226) in paragraph at lines 539--552
 \OT1/ptm/m/n/12 the spin-wait syn-chro-niza-tion over-head grows
  []
 
 <img/pipeline_speedup_scale_1.0x.png, id=62, 722.7pt x 433.62pt>
 File: img/pipeline_speedup_scale_1.0x.png Graphic file (type png)
 <use img/pipeline_speedup_scale_1.0x.png>
-Package pdftex.def Info: img/pipeline_speedup_scale_1.0x.png  used on input line 555.
+Package pdftex.def Info: img/pipeline_speedup_scale_1.0x.png  used on input line 557.
 (pdftex.def)             Requested size: 238.48886pt x 143.09503pt.
 <img/pipeline_speedup_scale_2.0x.png, id=63, 722.7pt x 433.62pt>
 File: img/pipeline_speedup_scale_2.0x.png Graphic file (type png)
 <use img/pipeline_speedup_scale_2.0x.png>
-Package pdftex.def Info: img/pipeline_speedup_scale_2.0x.png  used on input line 560.
+Package pdftex.def Info: img/pipeline_speedup_scale_2.0x.png  used on input line 562.
 (pdftex.def)             Requested size: 238.48886pt x 143.09503pt.
 
-Overfull \hbox (1.35292pt too wide) in paragraph at lines 553--565
+Overfull \hbox (1.35292pt too wide) in paragraph at lines 555--567
  []$[]$ 
  []
 
 
-Overfull \hbox (1.35292pt too wide) in paragraph at lines 553--565
+Overfull \hbox (1.35292pt too wide) in paragraph at lines 555--567
  []$ 
  []
 
@@ -658,20 +658,20 @@ Overfull \hbox (1.35292pt too wide) in paragraph at lines 553--565
 <img/optimal_speedup.png, id=69, 722.7pt x 433.62pt>
 File: img/optimal_speedup.png Graphic file (type png)
 <use img/optimal_speedup.png>
-Package pdftex.def Info: img/optimal_speedup.png  used on input line 598.
+Package pdftex.def Info: img/optimal_speedup.png  used on input line 600.
 (pdftex.def)             Requested size: 201.56699pt x 120.93639pt.
 
-Underfull \hbox (badness 1231) in paragraph at lines 608--613
+Underfull \hbox (badness 1231) in paragraph at lines 610--615
 \OT1/ptm/m/n/12 set of quan-ti-ta-tive re-sults ob-tained across all
  []
 
 
-Underfull \hbox (badness 1024) in paragraph at lines 608--613
+Underfull \hbox (badness 1024) in paragraph at lines 610--615
 \OT1/ptm/m/n/12 bench-mark con-fig-u-ra-tions. Each ta-ble cor-re-
  []
 
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
+Underfull \vbox (badness 2875) has occurred while \output is active []
 
 
 
@@ -721,7 +721,7 @@ Here is how much of TeX's memory you used:
  1141 hyphenation exceptions out of 8191
  72i,10n,79p,885b,1226s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/davil/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/davil/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/davil/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/davil/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/davil/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/davil/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/davil/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/davil/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/davil/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/davil/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/davil/AppData/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrb8a.pfb><C:/Users/davil/AppData/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrr8a.pfb><C:/Users/davil/AppData/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrro8a.pfb><C:/Users/davil/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/davil/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/davil/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
-Output written on PC_course_project_template.pdf (13 pages, 1879866 bytes).
+Output written on PC_course_project_template.pdf (13 pages, 1880166 bytes).
 PDF statistics:
  148 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
