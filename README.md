@@ -49,7 +49,7 @@ The framework evaluates several optimization strategies, including 1D separable 
 │   ├── pipeline_multithread.py    # Generates plots for pipeline test
 │   └── optimal_vs_sequential.py   # Generates plots for optimal vs sequential test
 ├── results/                   # Test results directory (generated automatically by scripts)
-├── results/                   # Graphs directory (generated automatically by scripts)
+├── graphs/                   # Graphs directory (generated automatically by scripts)
 └── data/                      # Data directory (generated automatically by scripts)
 ```
 
